@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portaria - Controle de Veículos</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@lottiefiles/dotlottie-web/+esm"></script>
+</head>
+<body class="bg-gradient">
+    <div class="container">
+        <header class="app-header glass-effect">
+            <div class="user-info">
+                <div class="profile-wrapper">
+                    <div class="profile-container">
+                        <img src="img/avatar-inicial.png" alt="Foto de Perfil" id="profilePic" class="profile-pic">
+                    </div>
+                    <span class="online-status"></span>
+                </div>
+                <div class="user-details">
+                    <span id="userName">Usuário</span>
+                    <small>Clique na foto para alterar</small>
+                </div>
+            </div>
+            <div class="datetime-weather">
+                <div id="weather" class="weather-widget">
+                    <div id="currentDateTime"></div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div id="cityName" style="font-weight: bold; color: #666666;"></div>
+                        <canvas id="weatherAnimation" style="width: 40px; height: 40px; display: none;"></canvas>
+                        <div id="temperature" style="font-weight: bold; color: #2E7D32; font-size: 1.1em;">--°C</div>
+                    </div>
+                    <div id="weatherDescription">Carregando...</div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <canvas id="windAnimation" style="width: 40px; height: 40px;"></canvas>
+                        <div id="windSpeed" style="font-weight: bold; color: #666666;">-- km/h</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="content-area glass-effect">
+            <h2>Registro de Veículos</h2>
+            
+            <form id="vehicleForm" class="form-container">
+                <div class="form-group">
+                    <label for="plate">Placa do Veículo*</label>
+                    <input type="text" id="plate" required pattern="[A-Za-z]{3}[0-9][A-Za-z0-9][0-9]{2}" 
+                           placeholder="ABC1D23" maxlength="7">
+                    <small>Formato: 3 letras + 1 número + 1 letra/número + 2 números</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="driverName">Nome do Motorista</label>
+                    <input type="text" id="driverName" placeholder="Nome completo">
+                </div>
+
+                <div class="form-group">
+                    <label for="driverPhone">Telefone do Motorista</label>
+                    <input type="tel" id="driverPhone" placeholder="(99) 9 9999-9999"
+                           maxlength="17" pattern="\(\d{2}\) \d \d{4}-\d{4}"
+                           title="Formato: (99) 9 9999-9999">
+                </div>
+
+                <div class="form-group">
+                    <label for="container">Número do Container</label>
+                    <input type="text" id="container" placeholder="ABCD1234567">
+                </div>
+
+                <div class="form-group">
+                    <label for="observations">Observações</label>
+                    <textarea id="observations" rows="3" placeholder="Observações adicionais"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Registrar Veículo</button>
+                    <button type="reset" class="btn-secondary">Limpar</button>
+                    <a href="index.html" class="btn-secondary" style="text-decoration: none; text-align: center;">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </a>
+                </div>
+            </form>
+
+            <div class="recent-entries">
+                <h3>Registros Recentes</h3>
+                <div id="recentEntriesList" class="entries-list">
+                    <!-- Registros serão inseridos aqui via JavaScript -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts de formatação -->
+    <script src="js/formatters.js"></script>
+
+    <!-- Scripts principais -->
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/app.js"></script>
+    <script type="module" src="js/portaria.js"></script>
+    <script type="module" src="js/profile.js"></script>
+    <script type="module" src="js/weather.js"></script>
+</body>
+</html>

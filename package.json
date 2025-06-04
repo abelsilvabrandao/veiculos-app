@@ -1,0 +1,26 @@
+{
+  "name": "statusentradaveiculos",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Sistema web responsivo para registrar, monitorar e validar veículos na portaria do porto.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@lottiefiles/dotlottie-web": "^0.45.0",
+    "firebase": "^10.7.1"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.1.0",
+    "vite": "^5.0.8"
+  },
+  "homepage": "https://abelsilvabrandao.github.io/statusEntradaVeiculos"
+}

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Controle de Entrada - Porto</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@lottiefiles/dotlottie-web/+esm"></script>
+</head>
+<body class="bg-gradient">
+    <div class="container">
+        <!-- Login Form -->
+        <div class="login-container glass-effect" id="loginForm">
+            <h2>Login</h2>
+            <form id="loginFormElement" class="form-container">
+                <div class="form-group">
+                    <input type="email" id="email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="password" placeholder="Senha" required>
+                </div>
+                <button type="submit" class="btn-primary">Entrar</button>
+            </form>
+        </div>
+
+        <!-- Main Content (hidden until login) -->
+        <div class="main-content hidden" id="mainContent">
+            <header class="app-header glass-effect">
+                <div class="user-info">
+                    <div class="profile-wrapper">
+                        <div class="profile-container">
+                            <img src="img/avatar-inicial.png" alt="Foto de Perfil" id="profilePic" class="profile-pic" title="Clique para alterar a foto">
+                        </div>
+                        <span class="online-status"></span>
+                    </div>
+                    <div class="user-details">
+                        <span id="userName">Usuário</span>
+                        <small>Clique na foto para alterar</small>
+                    </div>
+                </div>
+                <div class="datetime-weather">
+                    <div id="weather" class="weather-widget">
+                        <div id="currentDateTime"></div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div id="cityName" style="font-weight: bold; color: #666666;"></div>
+                            <canvas id="weatherAnimation" style="width: 40px; height: 40px; display: none;"></canvas>
+                            <div id="temperature" style="font-weight: bold; color: #2E7D32; font-size: 1.1em;">--°C</div>
+                        </div>
+                        <div id="weatherDescription">Carregando...</div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <canvas id="windAnimation" style="width: 40px; height: 40px;"></canvas>
+                            <div id="windSpeed" style="font-weight: bold; color: #666666;">-- km/h</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Nome do Usuário Form (mostrado apenas no primeiro acesso) -->
+            <div id="nameForm" class="name-form glass-effect hidden">
+                <h3>Bem-vindo!</h3>
+                <p>Por favor, insira seu nome ou apelido:</p>
+                <form id="userNameForm" class="form-container">
+                    <div class="form-group">
+                        <input type="text" id="displayName" placeholder="Seu nome" required maxlength="30">
+                    </div>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </form>
+            </div>
+
+            <!-- Menu de Acesso (mostrado após definir o nome) -->
+            <div id="accessMenu" class="access-menu glass-effect hidden">
+                <h2>Olá, <span id="welcomeName">Usuário</span>!</h2>
+                <div class="menu-buttons">
+                    <a href="portaria.html" class="menu-button btn-primary">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>PORTARIA</span>
+                    </a>
+                    <a href="gate.html" class="menu-button btn-primary">
+                        <i class="fas fa-door-open"></i>
+                        <span>GATE</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts de formatação -->
+    <script src="js/formatters.js"></script>
+
+    <!-- Scripts principais -->
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/app.js"></script>
+    <script type="module" src="js/profile.js"></script>
+    <script type="module" src="js/weather.js"></script>
+    <script type="module" src="js/profile-image.js"></script>
+    <!-- Modal de Recorte de Imagem -->
+    <div id="cropperModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Ajustar Foto de Perfil</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="image-container">
+                    <img id="cropperImage" src="#" alt="Imagem para recorte">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelCrop" class="btn-secondary">Cancelar</button>
+                <button id="saveCrop" class="btn-primary">Salvar</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
