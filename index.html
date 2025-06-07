@@ -33,15 +33,18 @@
         <div class="main-content hidden" id="mainContent">
             <header class="app-header glass-effect">
                 <div class="user-info">
-                    <div class="profile-wrapper">
-                        <div class="profile-container">
-                            <img src="img/avatar-inicial.png" alt="Foto de Perfil" id="profilePic" class="profile-pic" title="Clique para alterar a foto">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div class="profile-wrapper">
+                            <div class="profile-container">
+                                <img src="img/avatar-inicial.png" alt="Foto de Perfil" id="profilePic" class="profile-pic" title="Clique para alterar a foto">
+                            </div>
+                            <span class="online-status"></span>
                         </div>
-                        <span class="online-status"></span>
-                    </div>
-                    <div class="user-details">
-                        <span id="userName">Usuário</span>
-                        <small>Clique na foto para alterar</small>
+                        <div class="user-details">
+                            <span id="userName" style="color: #666666; cursor: pointer;" title="Clique para editar seu nome"></span>
+                            <i class="fas fa-edit" style="color: #666666; font-size: 0.8em; margin-left: 5px; cursor: pointer;" title="Editar nome"></i>
+                            <small>Clique na foto para alterar</small>
+                        </div>
                     </div>
                 </div>
                 <div class="datetime-weather">
@@ -75,13 +78,18 @@
 
             <!-- Menu de Acesso (mostrado após definir o nome) -->
             <div id="accessMenu" class="access-menu glass-effect hidden">
-                <h2>Olá, <span id="welcomeName">Usuário</span>!</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color: #666666; margin: 0;">Olá, <span id="welcomeName" style="color: #666666;">Usuário</span>!</h2>
+                    <button id="logoutBtnMenu" class="btn-icon glass-effect" title="Sair" style="margin-left: 15px;">
+                        <i class="fas fa-power-off" style="color: #666666;"></i>
+                    </button>
+                </div>
                 <div class="menu-buttons">
-                    <a href="portaria.html" class="menu-button btn-primary">
+                    <a href="portaria.html" class="menu-button btn-primary" style="padding: 15px 25px; font-size: 0.9em;">
                         <i class="fas fa-clipboard-list"></i>
                         <span>PORTARIA</span>
                     </a>
-                    <a href="gate.html" class="menu-button btn-primary">
+                    <a href="gate.html" class="menu-button btn-primary" style="padding: 15px 25px; font-size: 0.9em;">
                         <i class="fas fa-door-open"></i>
                         <span>GATE</span>
                     </a>
@@ -100,6 +108,7 @@
     <script type="module" src="js/profile.js"></script>
     <script type="module" src="js/weather.js"></script>
     <script type="module" src="js/profile-image.js"></script>
+    <script type="module" src="js/edit-name.js"></script>
     <!-- Modal de Recorte de Imagem -->
     <div id="cropperModal" class="modal hidden">
         <div class="modal-content">

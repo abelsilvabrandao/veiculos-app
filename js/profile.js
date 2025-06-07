@@ -81,7 +81,6 @@ function loadProfilePicture() {
     const user = auth.currentUser;
     const savedPic = localStorage.getItem('userProfilePic');
 
-    // Atualizar todas as imagens de perfil na página
     document.querySelectorAll('.profile-pic').forEach(pic => {
         if (user?.photoURL) {
             pic.src = user.photoURL;
@@ -93,26 +92,13 @@ function loadProfilePicture() {
     });
 }
 
-// Inicialização
-document.addEventListener('DOMContentLoaded', () => {
-    // Adicionar evento de clique nas fotos de perfil
-    document.querySelectorAll('.profile-pic').forEach(pic => {
-        pic.addEventListener('click', openFilePicker);
-    });
-
-    // Carregar foto do perfil
-    loadProfilePicture();
-
-    // Observar mudanças de autenticação
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            loadProfilePicture();
-        } else {
-            // Limpar foto quando deslogar
-            document.querySelectorAll('.profile-pic').forEach(pic => {
-                pic.src = 'img/avatar-inicial.png';
-            });
-            localStorage.removeItem('userProfilePic');
-        }
-    });
+auth.onAuthStateChanged(user => {
+    if (user) {
+        loadProfilePicture();
+    } else {
+        document.querySelectorAll('.profile-pic').forEach(pic => {
+            pic.src = 'img/avatar-inicial.png';
+        });
+        localStorage.removeItem('userProfilePic');
+    }
 });

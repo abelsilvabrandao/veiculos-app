@@ -1,0 +1,41 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Funções auxiliares
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    function isUserActive() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.status == 'active';
+    }
+    
+    // Regras para a coleção de usuários
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Regras para a coleção de registros
+    match /registros/{registroId} {
+      allow read: if isAuthenticated() && isUserActive();
+      allow create: if isAuthenticated() && isUserActive();
+      allow update: if isAuthenticated() && isUserActive();
+      allow delete: if false; // Não permitir deleção para manter histórico
+    }
+    
+    // Regras para a coleção de veículos
+    match /veiculos/{veiculoId} {
+      allow read: if isAuthenticated() && isUserActive();
+      allow create: if isAuthenticated() && isUserActive();
+      allow update: if isAuthenticated() && isUserActive();
+      allow delete: if false; // Não permitir deleção para manter histórico
+    }
+  }
+}

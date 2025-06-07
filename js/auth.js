@@ -1,8 +1,9 @@
+// auth.js completo corrigido
+
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { auth, db } from './main.js';
-import { doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { getFirestore, doc, getDoc, updateDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-// Função para obter elementos do DOM
 function getDOMElements() {
     return {
         loginForm: document.getElementById('loginFormElement'),
@@ -11,79 +12,49 @@ function getDOMElements() {
         nameForm: document.getElementById('nameForm'),
         accessMenu: document.getElementById('accessMenu'),
         userNameForm: document.getElementById('userNameForm'),
-        userNameElement: document.getElementById('userName'),
+        userName: document.getElementById('userName'),
+        welcomeName: document.getElementById('welcomeName'),
         profilePic: document.getElementById('profilePic'),
         onlineStatus: document.querySelector('.online-status')
     };
 }
 
-// Função para atualizar informações do usuário na interface
-async function updateUserInfo() {
-    const user = auth.currentUser;
+async function updateUserInfo(user) {
+    if (!user) return;
     const elements = getDOMElements();
 
-    if (user) {
-        try {
-            // Buscar dados do usuário no Firestore
-            const userRef = doc(db, 'users', user.uid);
-            const userDoc = await getDoc(userRef);
-            const userData = userDoc.data() || {};
+    const userDocRef = doc(db, 'users', user.uid);
+    let userData;
 
-            const displayName = userData.displayName || user.displayName || 'Usuário';
-            const photoURL = userData.photoURL || 'img/avatar-inicial.png';
+    try {
+        const userDoc = await getDoc(userDocRef);
 
-            console.log('Atualizando informações do usuário:', {
+        if (!userDoc.exists()) {
+            userData = {
                 email: user.email,
-                displayName: displayName
-            });
-
-            // Atualizar nome do usuário
-            const userNameElement = document.getElementById('userName');
-            if (userNameElement) {
-                console.log('Atualizando elemento userName com:', displayName);
-                userNameElement.textContent = displayName;
-            } else {
-                console.warn('Elemento userName não encontrado na página atual');
-            }
-
-            // Atualizar nome de boas-vindas
-            const welcomeElement = document.getElementById('welcomeName');
-            if (welcomeElement) {
-                console.log('Atualizando elemento welcomeName com:', displayName);
-                welcomeElement.textContent = displayName;
-            }
-
-            // Atualizar foto de perfil
-            const profilePic = document.getElementById('profilePic');
-            if (profilePic) {
-                console.log('Atualizando foto de perfil');
-                profilePic.src = photoURL;
-            } else {
-                console.warn('Elemento profilePic não encontrado na página atual');
-            }
-
-            // Atualizar status online
-            const onlineStatus = document.querySelector('.online-status');
-            if (onlineStatus) {
-                console.log('Atualizando status online');
-                onlineStatus.classList.add('active');
-            } else {
-                console.warn('Elemento online-status não encontrado na página atual');
-            }
-        } catch (error) {
-            console.error('Erro ao buscar dados do usuário:', error);
+                displayName: user.displayName || user.email,
+                photoURL: user.photoURL || 'img/avatar-inicial.png',
+                status: 'active',
+                createdAt: new Date().toISOString(),
+                lastLogin: new Date().toISOString()
+            };
+            await setDoc(userDocRef, userData);
+            console.log('Documento do usuário criado com sucesso');
+        } else {
+            userData = userDoc.data();
+            await updateDoc(userDocRef, { lastLogin: new Date().toISOString() });
+            console.log('Last login atualizado com sucesso');
         }
-    } else {
-        console.log('Nenhum usuário autenticado');
-        // Limpar informações do usuário quando não estiver logado
-        if (elements.userName) elements.userName.textContent = '';
-        if (elements.welcomeName) elements.welcomeName.textContent = '';
-        if (elements.profilePic) elements.profilePic.src = 'img/avatar-inicial.png';
-        if (elements.onlineStatus) elements.onlineStatus.classList.remove('active');
+
+        if (elements.userName) elements.userName.textContent = userData.displayName;
+        if (elements.welcomeName) elements.welcomeName.textContent = userData.displayName;
+        if (elements.profilePic) elements.profilePic.src = userData.photoURL;
+        if (elements.onlineStatus) elements.onlineStatus.style.backgroundColor = '#2E7D32';
+    } catch (error) {
+        console.error('Erro ao atualizar informações do usuário:', error);
     }
 }
 
-// Função para configurar o formulário de login
 function setupLoginForm(elements) {
     elements.loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -91,197 +62,168 @@ function setupLoginForm(elements) {
         const password = document.getElementById('password').value;
 
         try {
-            // Tentar fazer login
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
             console.log('Login bem sucedido:', user.email);
-            
-            // Limpar o formulário
             elements.loginForm.reset();
         } catch (error) {
-            console.error('Erro no login:', {
-                code: error.code,
-                message: error.message
-            });
-            
+            console.error('Erro no login:', error);
             let mensagem = 'Ocorreu um erro ao fazer login.';
-            
+
             switch (error.code) {
-                case 'auth/invalid-credential':
-                    mensagem = 'Usuário ou senha inválidos.';
-                    break;
-                case 'auth/invalid-email':
-                    mensagem = 'Email inválido.';
-                    break;
-                case 'auth/user-disabled':
-                    mensagem = 'Esta conta foi desativada.';
-                    break;
-                case 'auth/user-not-found':
-                    mensagem = 'Usuário não encontrado.';
-                    break;
-                case 'auth/wrong-password':
-                    mensagem = 'Senha incorreta.';
-                    break;
-                case 'auth/too-many-requests':
-                    mensagem = 'Muitas tentativas de login. Tente novamente mais tarde.';
-                    break;
-                default:
-                    console.warn('Erro não mapeado:', error.code);
+                case 'auth/invalid-credential': mensagem = 'Usuário ou senha inválidos.'; break;
+                case 'auth/invalid-email': mensagem = 'Email inválido.'; break;
+                case 'auth/user-disabled': mensagem = 'Esta conta foi desativada.'; break;
+                case 'auth/user-not-found': mensagem = 'Usuário não encontrado.'; break;
+                case 'auth/wrong-password': mensagem = 'Senha incorreta.'; break;
+                case 'auth/too-many-requests': mensagem = 'Muitas tentativas de login. Tente novamente mais tarde.'; break;
+                default: console.warn('Erro não mapeado:', error.code);
             }
 
-            Swal.fire({
-                icon: 'error',
-                title: 'Erro no Login',
-                text: mensagem,
-                confirmButtonColor: '#3085d6',
-                confirmButtonText: 'OK'
-            });
+            Swal.fire({ icon: 'error', title: 'Erro no Login', text: mensagem, confirmButtonColor: '#3085d6', confirmButtonText: 'OK' });
         }
     });
 }
 
-// Função para configurar o formulário de nome
 function setupUserNameForm(elements) {
+    if (!elements.userNameForm) return;
+
     elements.userNameForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const displayName = document.getElementById('displayName').value.trim();
+        const user = auth.currentUser;
 
-        try {
-            await updateProfile(auth.currentUser, { displayName });
-            if (elements.nameForm) elements.nameForm.classList.add('hidden');
-            if (elements.accessMenu) elements.accessMenu.classList.remove('hidden');
-            updateUserInfo();
+        if (user) {
+            try {
+                await setDoc(doc(db, 'users', user.uid), {
+                    displayName: displayName,
+                    email: user.email,
+                    lastUpdated: new Date().toISOString(),
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    photoURL: user.photoURL || 'img/avatar-inicial.png'
+                });
 
-            Swal.fire({
-                icon: 'success',
-                title: 'Nome salvo com sucesso!',
-                text: 'Bem-vindo ao sistema!',
-                confirmButtonColor: '#3085d6',
-                confirmButtonText: 'OK'
-            });
-        } catch (error) {
-            console.error('Erro ao salvar nome:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Erro ao salvar nome',
-                text: 'Por favor, tente novamente.',
-                confirmButtonColor: '#3085d6',
-                confirmButtonText: 'OK'
-            });
+                await updateProfile(user, { displayName });
+
+                console.log('Nome atualizado com sucesso');
+                if (elements.nameForm) elements.nameForm.classList.add('hidden');
+                if (elements.accessMenu) elements.accessMenu.classList.remove('hidden');
+                updateUserInfo(user);
+
+                await Swal.fire({ icon: 'success', title: 'Nome salvo com sucesso!', text: 'Bem-vindo ao sistema!', confirmButtonColor: '#2E7D32' });
+            } catch (error) {
+                console.error('Erro ao atualizar nome:', error);
+                await Swal.fire({ icon: 'error', title: 'Erro ao salvar nome', text: 'Tente novamente mais tarde', confirmButtonColor: '#2E7D32' });
+            }
         }
     });
 }
 
-// Função para configurar o listener de estado de autenticação
 function setupAuthStateListener() {
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            // Usuário está logado
-            console.log('Usuário autenticado:', user.email);
-            const elements = getDOMElements();
-            
-            if (elements.loginFormContainer) {
-                console.log('Ocultando formulário de login');
-                elements.loginFormContainer.classList.add('hidden');
-            }
-            if (elements.mainContent) {
-                console.log('Mostrando conteúdo principal');
-                elements.mainContent.classList.remove('hidden');
-            }
-            
-            // Atualizar informações do usuário na interface
-            updateUserInfo();
+    onAuthStateChanged(auth, async (user) => {
+        const elements = getDOMElements();
 
-            // Verificar se o usuário já tem um nome definido
-            if (user.displayName) {
-                console.log('Usuário já tem nome definido:', user.displayName);
-                if (elements.nameForm) {
-                    elements.nameForm.classList.add('hidden');
-                    console.log('Formulário de nome ocultado');
-                }
-                if (elements.accessMenu) {
-                    elements.accessMenu.classList.remove('hidden');
-                    console.log('Menu de acesso exibido');
-                }
+        if (user) {
+            console.log('Usuário autenticado:', user.email);
+            if (elements.loginFormContainer) elements.loginFormContainer.style.display = 'none';
+            if (elements.mainContent) elements.mainContent.classList.remove('hidden');
+
+            await updateUserInfo(user);
+
+            const userDocRef = doc(db, 'users', user.uid);
+            const updatedDoc = await getDoc(userDocRef);
+            const userData = updatedDoc.data();
+
+            if (userData.displayName && userData.displayName !== user.email) {
+                console.log('Usuário já tem nome definido:', userData.displayName);
+                if (elements.nameForm) elements.nameForm.classList.add('hidden');
+                if (elements.accessMenu) elements.accessMenu.classList.remove('hidden');
             } else {
-                console.log('Usuário precisa definir um nome');
-                if (elements.nameForm) {
-                    elements.nameForm.classList.remove('hidden');
-                    console.log('Formulário de nome exibido');
-                }
-                if (elements.accessMenu) {
-                    elements.accessMenu.classList.add('hidden');
-                    console.log('Menu de acesso ocultado');
-                }
+                console.log('Usuário precisa definir nome');
+                if (elements.nameForm) elements.nameForm.classList.remove('hidden');
+                if (elements.accessMenu) elements.accessMenu.classList.add('hidden');
             }
         } else {
-            // Usuário está deslogado
-            const elements = getDOMElements();
-            
-            if (elements.loginFormContainer) {
-                elements.loginFormContainer.classList.remove('hidden');
-            }
-            if (elements.mainContent) {
-                elements.mainContent.classList.add('hidden');
-            }
-            
-            // Remover classe online
-            if (elements.onlineStatus) {
-                elements.onlineStatus.classList.remove('active');
-            }
-            
-            // Resetar foto de perfil
-            if (elements.profilePic) {
-                elements.profilePic.src = 'img/avatar-inicial.png';
-            }
+            console.log('Nenhum usuário autenticado');
+            if (elements.loginFormContainer) elements.loginFormContainer.style.display = 'block';
+            if (elements.mainContent) elements.mainContent.classList.add('hidden');
+            if (elements.nameForm) elements.nameForm.classList.add('hidden');
+            if (elements.accessMenu) elements.accessMenu.classList.add('hidden');
         }
     });
 }
 
-// Função de logout
 const handleLogout = async () => {
     try {
         await signOut(auth);
         console.log('Logout realizado com sucesso');
-        
-        // Mostrar mensagem de sucesso
-        Swal.fire({
-            icon: 'success',
-            title: 'Logout realizado',
-            text: 'Você foi desconectado com sucesso!',
-            timer: 2000,
-            showConfirmButton: false
-        });
+        Swal.fire({ icon: 'success', title: 'Logout realizado', text: 'Você foi desconectado com sucesso!', timer: 2000, showConfirmButton: false });
     } catch (error) {
         console.error('Erro ao fazer logout:', error);
-        
-        // Mostrar mensagem de erro
-        Swal.fire({
-            icon: 'error',
-            title: 'Erro ao fazer logout',
-            text: error.message,
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'OK'
-        });
+        Swal.fire({ icon: 'error', title: 'Erro ao fazer logout', text: error.message, confirmButtonColor: '#3085d6', confirmButtonText: 'OK' });
     }
 };
 
-// Aguardar o DOM estar pronto
 document.addEventListener('DOMContentLoaded', () => {
+    const logoutBtn = document.getElementById('logoutBtn');
+    const logoutBtnMenu = document.getElementById('logoutBtnMenu');
+
+    const handleLogout = async () => {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        try {
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            const userData = userDoc.data();
+            const displayName = userData?.displayName || user.email;
+            const photoURL = userData?.photoURL || 'img/avatar-inicial.png';
+
+            const result = await Swal.fire({
+                title: 'Confirmar Saída',
+                html: `
+                    <div style="margin-bottom: 15px; position: relative;">
+                        <div style="position: relative; display: inline-block;">
+                            <img src="${photoURL}" alt="Foto de Perfil" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                            <span style="position: absolute; bottom: 5px; right: 5px; width: 12px; height: 12px; background-color: #2E7D32; border-radius: 50%; border: 2px solid #fff; animation: pulse 1.5s infinite;"></span>
+                        </div>
+                        <div style="margin-top: 10px; color: #666; font-weight: bold;">${displayName}</div>
+                    </div>
+                    <style>
+                        @keyframes pulse {
+                            0% { transform: scale(1); opacity: 1; }
+                            50% { transform: scale(1.2); opacity: 0.8; }
+                            100% { transform: scale(1); opacity: 1; }
+                        }
+                    </style>
+                    <div style="color: #666;">Você realmente deseja sair do sistema?</div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#2E7D32',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sim, sair',
+                cancelButtonText: 'Cancelar',
+                customClass: { popup: 'glass-effect' }
+            });
+
+            if (result.isConfirmed) {
+                await signOut(auth);
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error('Erro ao fazer logout:', error);
+            Swal.fire({ icon: 'error', title: 'Erro', text: 'Não foi possível fazer logout. Tente novamente.', customClass: { popup: 'glass-effect' } });
+        }
+    };
+
+    if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+    if (logoutBtnMenu) logoutBtnMenu.addEventListener('click', handleLogout);
+
     const elements = getDOMElements();
-
-    // Configurar listeners apenas se os elementos existirem
-    if (elements.loginForm) {
-        setupLoginForm(elements);
-    }
-
-    if (elements.userNameForm) {
-        setupUserNameForm(elements);
-    }
-
-    // Iniciar listener de autenticação
+    if (elements.loginForm) setupLoginForm(elements);
+    if (elements.userNameForm) setupUserNameForm(elements);
     setupAuthStateListener();
 });
 
-// Exportar funções necessárias
 export { handleLogout };

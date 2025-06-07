@@ -225,12 +225,36 @@ async function updateWeatherUI() {
                 }
 
                 // Criar nova animação
-                weatherAnimation = new DotLottie({
-                    autoplay: true,
-                    loop: true,
-                    canvas: animationCanvas,
-                    src: weatherAnimations[weatherCode]
-                });
+                try {
+                    weatherAnimation = new DotLottie({
+                        autoplay: true,
+                        loop: true,
+                        canvas: animationCanvas,
+                        src: weatherAnimations[weatherCode]
+                    });
+                } catch (error) {
+                    console.error('Erro ao criar animação do clima:', error);
+                    // Tenta recriar o canvas
+                    const newCanvas = document.createElement('canvas');
+                    newCanvas.style.width = '40px';
+                    newCanvas.style.height = '40px';
+                    animationCanvas.parentNode.replaceChild(newCanvas, animationCanvas);
+                    
+                    // Tenta criar a animação novamente
+                    try {
+                        weatherAnimation = new DotLottie({
+                            autoplay: true,
+                            loop: true,
+                            canvas: newCanvas,
+                            src: weatherAnimations[weatherCode]
+                        });
+                    } catch (e) {
+                        console.error('Falha na segunda tentativa de criar animação do clima:', e);
+                        // Se falhar, mostra apenas o ícone
+                        tempElement.innerHTML = `${temperature}°C ${icon}`;
+                        newCanvas.style.display = 'none';
+                    }
+                }
             } else {
                 // Para climas sem animação, mostrar ícone Font Awesome
                 tempElement.innerHTML = `${temperature}°C ${icon}`;
@@ -250,14 +274,34 @@ async function updateWeatherUI() {
             if (windAnimation) {
                 windAnimation.destroy();
             }
-
             // Criar nova animação do vento
-            windAnimation = new DotLottie({
-                canvas: windCanvas,
-                autoplay: true,
-                loop: true,
-                src: windAnimationUrl
-            });
+            try {
+                windAnimation = new DotLottie({
+                    canvas: windCanvas,
+                    autoplay: true,
+                    loop: true,
+                    src: windAnimationUrl
+                });
+            } catch (error) {
+                console.error('Erro ao criar animação do vento:', error);
+                // Tenta recriar o canvas
+                const newCanvas = document.createElement('canvas');
+                newCanvas.style.width = '40px';
+                newCanvas.style.height = '40px';
+                windCanvas.parentNode.replaceChild(newCanvas, windCanvas);
+                
+                // Tenta criar a animação novamente
+                try {
+                    windAnimation = new DotLottie({
+                        canvas: newCanvas,
+                        autoplay: true,
+                        loop: true,
+                        src: windAnimationUrl
+                    });
+                } catch (e) {
+                    console.error('Falha na segunda tentativa de criar animação do vento:', e);
+                }
+            }
         }
 
     } catch (error) {
@@ -288,4 +332,24 @@ async function updateWeatherUI() {
 setInterval(updateWeatherUI, 30 * 60 * 1000);
 
 // Primeira atualização
-document.addEventListener('DOMContentLoaded', updateWeatherUI);
+document.addEventListener('DOMContentLoaded', () => {
+    // Pequeno delay para garantir que todos os elementos estejam carregados
+    setTimeout(updateWeatherUI, 500);
+});
+
+// Garantir que as animações sejam recriadas quando a página voltar do cache
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        // Destruir animações existentes
+        if (weatherAnimation) {
+            weatherAnimation.destroy();
+            weatherAnimation = null;
+        }
+        if (windAnimation) {
+            windAnimation.destroy();
+            windAnimation = null;
+        }
+        // Atualizar UI
+        updateWeatherUI();
+    }
+});

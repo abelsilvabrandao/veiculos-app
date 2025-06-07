@@ -211,7 +211,83 @@ tr:hover {
     gap: 15px;
 }
 
-/* Modal */
+.notification-badge, .success-badge {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+}
+
+/* Badges na lista de veículos (botão editar) */
+.btn-primary .doc-badge {
+    top: -5px;
+    right: 25px;
+}
+
+.btn-primary .vehicle-badge {
+    top: -5px;
+    right: 5px;
+}
+
+/* Badges no modal de ações (botões de foto) */
+#actionModal .notification-badge,
+#actionModal .success-badge {
+    top: -5px;
+    right: -5px;
+}
+
+.notification-badge {
+    background-color: #ff4444;
+}
+
+.success-badge {
+    background-color: #4CAF50;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 10px;
+}
+
+/* Estilo do botão de logout */
+.btn-icon {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.btn-icon i {
+    font-size: 1.2em;
+    transition: color 0.3s ease;
+}
+
+.btn-icon:hover i {
+    color: #d33 !important;
+}
+
+/* Estilo glass-effect para o SweetAlert2 */
+.swal2-popup.glass-effect {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37) !important;
+}
+
+/* Estilos para o modal */
 .modal {
     position: fixed;
     top: 0;

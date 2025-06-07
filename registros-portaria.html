@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registros da Portaria - Controle de Veículos</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/registros-portaria.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@lottiefiles/dotlottie-web/+esm"></script>
+</head>
+<body class="bg-gradient">
+    <div class="container">
+        <header class="app-header glass-effect">
+            <div class="user-info">
+                <div class="profile-wrapper">
+                    <div class="profile-container">
+                        <img src="img/avatar-inicial.png" alt="Foto de Perfil" id="profilePic" class="profile-pic">
+                    </div>
+                    <span class="online-status"></span>
+                </div>
+                <div class="user-details">
+                    <span id="userName">Usuário</span>
+                    <small>Clique na foto para alterar</small>
+                </div>
+            </div>
+            <div class="datetime-weather">
+                <div id="weather" class="weather-widget">
+                    <div id="currentDateTime"></div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div id="cityName" style="font-weight: bold; color: #666666;"></div>
+                        <canvas id="weatherAnimation" style="width: 40px; height: 40px; display: none;"></canvas>
+                        <div id="temperature" style="font-weight: bold; color: #2E7D32; font-size: 1.1em;">--°C</div>
+                    </div>
+                    <div id="weatherDescription">Carregando...</div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <canvas id="windAnimation" style="width: 40px; height: 40px;"></canvas>
+                        <div id="windSpeed" style="font-weight: bold; color: #666666;">-- km/h</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="content-area glass-effect">
+            <div class="title-with-actions">
+                <h2>Registros da Portaria</h2>
+                <div class="action-buttons">
+                    <a href="portaria.html" class="btn-primary" style="text-decoration: none;">
+                        <i class="fas fa-plus"></i> Novo Registro
+                    </a>
+                    <a href="portaria.html" class="btn-secondary" style="text-decoration: none;">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </a>
+                </div>
+            </div>
+
+            <div class="filters">
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Buscar por placa, motorista...">
+                </div>
+                <div class="date-filter">
+                    <input type="date" id="dateFilter" class="date-input">
+                </div>
+            </div>
+
+            <div class="vehicles-list">
+                <table id="vehiclesTable">
+                    <thead>
+                        <tr>
+                            <th>Data/Hora</th>
+                            <th>Placa Cavalo</th>
+                            <th>Placa Carreta</th>
+                            <th>Motorista</th>
+                            <th>Telefone</th>
+                            <th>Container</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vehiclesTableBody">
+                        <!-- Dados serão inseridos aqui via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal para ações do veículo -->
+    <div id="actionModal" class="modal hidden">
+        <div class="modal-content glass-effect">
+            <h3>Ações do Veículo</h3>
+            <div class="vehicle-info">
+                <p><strong>Placa:</strong> <span id="modalPlate"></span></p>
+                <p><strong>Motorista:</strong> <span id="modalDriver"></span></p>
+                <p><strong>Telefone:</strong> <span id="modalPhone"></span></p>
+                <p><strong>Status:</strong> <span id="editStatus" class="status-badge"></span></p>
+            </div>
+            <div class="action-buttons">
+                <button type="button" class="btn-primary" onclick="handleCall()">
+                    <i class="fas fa-phone"></i> Ligar para Motorista
+                </button>
+                <button type="button" id="btnDocPhoto" class="btn-primary" onclick="handlePhoto('doc')">
+                <i class="fas fa-id-card"></i> Anexar Foto Documento
+                <span class="notification-badge hidden" id="docNotification">
+                <i class="fas fa-spinner fa-spin" style="font-size: 10px; color: white;"></i>
+                </span>
+                <span class="success-badge hidden" id="docSuccess"><i class="fas fa-check"></i></span>
+                </button>
+                <button type="button" id="btnVehiclePhoto" class="btn-primary" onclick="handlePhoto('vehicle')">
+                <i class="fas fa-truck"></i> Anexar Foto Veículo
+                <span class="notification-badge hidden" id="vehicleNotification">
+                <i class="fas fa-spinner fa-spin" style="font-size: 10px; color: white;"></i>
+                </span>
+                <span class="success-badge hidden" id="vehicleSuccess"><i class="fas fa-check"></i></span>
+                </button>
+
+                <button type="button" class="btn-secondary" onclick="closeActionModal()">
+                    <i class="fas fa-times"></i> Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts principais -->
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/app.js"></script>
+    <script type="module" src="js/profile.js"></script>
+    <script type="module" src="js/weather.js"></script>
+    <script type="module" src="js/registros-portaria.js"></script>
+</body>
+</html>

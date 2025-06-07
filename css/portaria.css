@@ -1,0 +1,264 @@
+/* Estilização dos registros de veículos */
+.entry-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.entry-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.entry-content {
+    flex: 1;
+}
+
+.entry-header {
+    margin-bottom: 5px;
+    position: relative;
+}
+
+.notification-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #FFC107;
+    color: #000;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    border: 2px solid #fff;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+    }
+    70% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+    }
+}
+
+.plate-number {
+    font-size: 1.1em;
+    color: #2E7D32;
+    margin-right: 5px;
+}
+
+.trailer-plate {
+    color: #666666;
+    font-size: 0.9em;
+}
+
+.entry-details {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.driver-name {
+    color: #666666;
+    font-size: 0.9em;
+}
+
+.container-number {
+    color: #666666;
+    font-size: 0.85em;
+    font-family: monospace;
+}
+
+.timestamp {
+    color: #888888;
+    font-size: 0.8em;
+}
+
+.entry-status {
+    margin-left: 15px;
+}
+
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8em;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+/* Status badges */
+.status-badge.pending {
+    background-color: #FFF3E0;
+    color: #E65100;
+}
+
+.status-badge.scheduled {
+    background-color: #2E7D32;
+    color: #f8f9f8;
+}
+
+.status-badge.unscheduled {
+        background-color: #fc381a;
+    color: #fafafa;
+}
+
+.status-badge.completed {
+        background-color: #E8F5E9;
+    color: #2E7D32;
+}
+
+.status-badge.cancelled {
+    background-color: #FFEBEE;
+    color: #C62828;
+}
+
+.status-badge.aguardando {
+    background-color: #E3F2FD;
+    color: #1565C0;
+}
+
+
+/* Estado vazio */
+.empty-state {
+    text-align: center;
+    padding: 30px;
+    color: #666666;
+}
+
+.empty-state i {
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 0.9em;
+}
+
+/* Formulário de registro */
+.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+#trailerPlateGroup {
+    display: none;
+}
+
+.form-section {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.recent-entries {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.recent-entries h3 {
+    color: #666666;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+    font-weight: 500;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #666666;
+    font-weight: 500;
+}
+
+.form-group small {
+    display: block;
+    color: #888888;
+    font-size: 0.8em;
+    margin-top: 5px;
+}
+
+.form-group input[type="text"],
+.form-group input, .form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #333333;
+    font-size: 1em;
+    transition: all 0.3s ease;
+}
+
+.form-group input:invalid,
+.form-group input.invalid {
+    border-color: #ff5252;
+    background-color: rgba(255, 82, 82, 0.1);
+}
+
+.form-group input:focus:invalid {
+    box-shadow: 0 0 0 2px rgba(255, 82, 82, 0.2);
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="tel"]:focus,
+.form-group textarea:focus {
+    border-color: #2E7D32;
+    outline: none;
+}
+
+.form-group input[type="text"].invalid,
+.form-group input[type="tel"].invalid {
+    border-color: #C62828;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 30px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .form-actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .form-actions button,
+    .form-actions a {
+        width: 100%;
+    }
+    
+    .entry-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .entry-status {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+}

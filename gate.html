@@ -6,9 +6,12 @@
     <title>Gate - Controle de Veículos</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/gate.css">
+    <link rel="stylesheet" href="css/sweetalert-custom.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="https://cdn.jsdelivr.net/npm/@lottiefiles/dotlottie-web/+esm"></script>
+    
 </head>
 <body class="bg-gradient">
     <div class="container">
@@ -55,57 +58,104 @@
                     <input type="text" id="searchInput" placeholder="Buscar por placa ou motorista...">
                 </div>
                 <div class="status-filter">
-                    <label>
-                        <input type="radio" name="status" value="all" checked> Todos
-                    </label>
-                    <label>
-                        <input type="radio" name="status" value="scheduled"> Na Programação
-                    </label>
-                    <label>
-                        <input type="radio" name="status" value="unscheduled"> Fora da Programação
-                    </label>
-                </div>
+                <select id="statusSelect" class="form-control">
+                <option value="all" selected>Todos</option>
+                <option value="pending">Pendente</option>
+                <option value="aguardando">Aguardando</option>
+                <option value="scheduled">Na Programação</option>
+                <option value="unscheduled">Fora da Programação</option>
+                <option value="completed">Concluído</option>
+                <option value="cancelled">Cancelado</option>
+                </select>
+                <div class="pending-filter" style="margin-top: 10px;">
+                <label for="pendingSelect">Pendências:</label>
+                <select id="pendingSelect" class="form-control">
+                <option value="all" selected>Todos</option>
+                <option value="with">Com Pendências</option>
+                <option value="without">Sem Pendências</option>
+            </select>
             </div>
+            </div>
+            <div class="date-time-filter">
+            <label for="startDate">Data Inicial:</label>
+            <input type="date" id="startDate" class="form-control">
 
+            <label for="startTime">Hora Inicial:</label>
+            <input type="time" id="startTime" class="form-control">
+
+            <label for="endDate">Data Final:</label>
+            <input type="date" id="endDate" class="form-control">
+
+            <label for="endTime">Hora Final:</label>
+            <input type="time" id="endTime" class="form-control">
+            </div>
+            </div>
             <div class="vehicles-list">
-                <table id="vehiclesTable">
+                <table id="vehiclesTable" class="table-hover">
                     <thead>
                         <tr>
-                            <th>Horário</th>
-                            <th>Placa</th>
+                            <th>Data/Hora</th>
+                            <th>Placa Cavalo</th>
+                            <th>Placa Carreta</th>
                             <th>Motorista</th>
+                            <th>Telefone</th>
                             <th>Container</th>
                             <th>Status</th>
                             <th>Observações</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="vehiclesTableBody">
+                    <tbody id="vehiclesTableBody" class="table-striped">
                         <!-- Dados serão inseridos aqui via JavaScript -->
                     </tbody>
                 </table>
             </div>
         </main>
 
-        <!-- Modal para edição de status e observações -->
-        <div id="editModal" class="modal hidden">
+        <!-- Modal para ações do veículo -->
+        <div id="actionModal" class="modal hidden">
             <div class="modal-content glass-effect">
-                <h3>Atualizar Registro</h3>
+                <h3>Ações do Veículo</h3>
                 <form id="editForm">
-                    <div class="form-group">
-                        <label for="editStatus">Status</label>
-                        <select id="editStatus" required>
-                            <option value="scheduled">Na Programação</option>
-                            <option value="unscheduled">Fora da Programação</option>
-                        </select>
+                    <div class="vehicle-info">
+                        <p><strong>Placa:</strong> <span id="modalPlate"></span></p>
+                        <p><strong>Motorista:</strong> <span id="modalDriver"></span></p>
+                        <div class="form-group">
+                            <label for="editStatus">Status:</label>
+                            <select id="editStatus" class="form-control" required>
+                                <option value="aguardando">Aguardando</option>
+                                <option value="pending">Pendente</option>
+                                <option value="scheduled">Na Programação</option>
+                                <option value="unscheduled">Fora da Programação</option>
+                                <option value="completed">Concluído</option>
+                                <option value="cancelled">Cancelado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editObservations">Observações:</label>
+                            <textarea id="editObservations" rows="3" class="form-control"></textarea>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="editObservations">Observações</label>
-                        <textarea id="editObservations" rows="3"></textarea>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn-primary">Salvar</button>
-                        <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <div class="action-buttons">
+                        <button type="button" class="btn-primary" onclick="handleCall()">
+                            <i class="fas fa-phone"></i> Ligar para Motorista
+                        </button>
+                        <button type="button" id="btnDocPhoto" class="btn-primary" onclick="handlePhoto('doc')">
+                            <i class="fas fa-id-card"></i> Foto Documento
+                            <span class="notification-badge hidden" id="docNotification"><i class="fas fa-spinner fa-spin" style="font-size: 10px; color: white;"></i></span>
+                            <span class="success-badge hidden" id="docSuccess"><i class="fas fa-check"></i></span>
+                        </button>
+                        <button type="button" id="btnVehiclePhoto" class="btn-primary" onclick="handlePhoto('vehicle')">
+                            <i class="fas fa-truck"></i> Foto Veículo
+                            <span class="notification-badge hidden" id="vehicleNotification"><i class="fas fa-spinner fa-spin" style="font-size: 10px; color: white;"></i></span>
+                            <span class="success-badge hidden" id="vehicleSuccess"><i class="fas fa-check"></i></span>
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Salvar Alterações
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="closeActionModal()">
+                            <i class="fas fa-times"></i> Fechar
+                        </button>
                     </div>
                 </form>
             </div>
@@ -116,7 +166,6 @@
     <script type="module" src="js/auth.js"></script>
     <script type="module" src="js/app.js"></script>
     <script type="module" src="js/gate.js"></script>
-    <script type="module" src="js/profile.js"></script>
     <script type="module" src="js/weather.js"></script>
 </body>
 </html>

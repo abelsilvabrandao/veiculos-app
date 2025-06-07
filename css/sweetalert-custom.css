@@ -1,0 +1,25 @@
+/* Estilos personalizados para o SweetAlert2 */
+.swal2-popup.swal2-modal {
+    width: auto !important;
+    max-width: 90% !important;
+}
+
+.swal2-popup.swal2-modal img {
+    max-width: 100% !important;
+    max-height: 70vh !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+}
+
+/* Ajuste para telas menores */
+@media (max-width: 768px) {
+    .swal2-popup.swal2-modal {
+        width: 90% !important;
+        margin: 10px !important;
+    }
+
+    .swal2-popup.swal2-modal img {
+        max-height: 50vh !important;
+    }
+}
