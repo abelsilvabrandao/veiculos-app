@@ -2,7 +2,7 @@
 
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { auth, db } from './main.js';
-import { getFirestore, doc, getDoc, updateDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { doc, getDoc, updateDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 function getDOMElements() {
     return {
@@ -154,76 +154,9 @@ function setupAuthStateListener() {
     });
 }
 
-const handleLogout = async () => {
-    try {
-        await signOut(auth);
-        console.log('Logout realizado com sucesso');
-        Swal.fire({ icon: 'success', title: 'Logout realizado', text: 'Você foi desconectado com sucesso!', timer: 2000, showConfirmButton: false });
-    } catch (error) {
-        console.error('Erro ao fazer logout:', error);
-        Swal.fire({ icon: 'error', title: 'Erro ao fazer logout', text: error.message, confirmButtonColor: '#3085d6', confirmButtonText: 'OK' });
-    }
-};
-
 document.addEventListener('DOMContentLoaded', () => {
-    const logoutBtn = document.getElementById('logoutBtn');
-    const logoutBtnMenu = document.getElementById('logoutBtnMenu');
-
-    const handleLogout = async () => {
-        const user = auth.currentUser;
-        if (!user) return;
-
-        try {
-            const userDoc = await getDoc(doc(db, 'users', user.uid));
-            const userData = userDoc.data();
-            const displayName = userData?.displayName || user.email;
-            const photoURL = userData?.photoURL || 'img/avatar-inicial.png';
-
-            const result = await Swal.fire({
-                title: 'Confirmar Saída',
-                html: `
-                    <div style="margin-bottom: 15px; position: relative;">
-                        <div style="position: relative; display: inline-block;">
-                            <img src="${photoURL}" alt="Foto de Perfil" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
-                            <span style="position: absolute; bottom: 5px; right: 5px; width: 12px; height: 12px; background-color: #2E7D32; border-radius: 50%; border: 2px solid #fff; animation: pulse 1.5s infinite;"></span>
-                        </div>
-                        <div style="margin-top: 10px; color: #666; font-weight: bold;">${displayName}</div>
-                    </div>
-                    <style>
-                        @keyframes pulse {
-                            0% { transform: scale(1); opacity: 1; }
-                            50% { transform: scale(1.2); opacity: 0.8; }
-                            100% { transform: scale(1); opacity: 1; }
-                        }
-                    </style>
-                    <div style="color: #666;">Você realmente deseja sair do sistema?</div>
-                `,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#2E7D32',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Sim, sair',
-                cancelButtonText: 'Cancelar',
-                customClass: { popup: 'glass-effect' }
-            });
-
-            if (result.isConfirmed) {
-                await signOut(auth);
-                window.location.reload();
-            }
-        } catch (error) {
-            console.error('Erro ao fazer logout:', error);
-            Swal.fire({ icon: 'error', title: 'Erro', text: 'Não foi possível fazer logout. Tente novamente.', customClass: { popup: 'glass-effect' } });
-        }
-    };
-
-    if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
-    if (logoutBtnMenu) logoutBtnMenu.addEventListener('click', handleLogout);
-
     const elements = getDOMElements();
     if (elements.loginForm) setupLoginForm(elements);
     if (elements.userNameForm) setupUserNameForm(elements);
     setupAuthStateListener();
 });
-
-export { handleLogout };

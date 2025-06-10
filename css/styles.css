@@ -54,7 +54,6 @@
 }
 
 .btn-primary {
-    width: 100%;
     padding: 12px;
     background: var(--primary-color);
     color: white;
@@ -75,6 +74,8 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    position: relative;
+    z-index: 2;
 }
 
 .user-info {
@@ -85,8 +86,8 @@
 
 .profile-wrapper {
     position: relative;
-    width: 48px;
-    height: 48px;
+    width: 56px;
+    height: 56px;
     display: inline-block;
 }
 
@@ -94,10 +95,10 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 48px;
-    height: 48px;
-    min-width: 48px;
-    min-height: 48px;
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
     transition: transform 0.2s;
     cursor: pointer;
     border-radius: 9999px;
@@ -110,16 +111,18 @@
     transform: scale(1.05);
 }
 
+
 .profile-pic {
     width: 100%;
     height: 100%;
     border-radius: 9999px;
     object-fit: cover;
-    border: 2px solid var(--primary-color);
+    border: 3px solid var(--primary-color);
     transition: all 0.2s;
     display: block;
     -webkit-mask-image: -webkit-radial-gradient(white, black);
     mask-image: radial-gradient(white, black);
+    animation: borderPulse 2s ease-in-out infinite;
 }
 
 .profile-container:hover .profile-pic {
@@ -142,25 +145,24 @@
     }
 }
 
-.online-status {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: #9CA3AF;
-    border: 2px solid white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-    z-index: 20;
-    transition: background-color 0.3s ease;
-    pointer-events: none;
+
+
+@keyframes borderPulse {
+    0% {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+    }
+    50% {
+        border-color: #10B981;
+        box-shadow: 0 0 10px 2px rgba(16, 185, 129, 0.6);
+    }
+    100% {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+    }
 }
 
-.online-status.active {
-    background-color: #10B981;
-    animation: pulse 2s ease-in-out infinite;
-}
+
 
 .user-details {
     display: flex;

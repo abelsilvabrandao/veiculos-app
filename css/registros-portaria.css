@@ -1,4 +1,31 @@
 /* Estilos específicos para a página de registros da portaria */
+:root {
+    --primary-color: #10B981;
+    --secondary-color: #059669;
+    --bg-start: #F0FDF4;
+    --bg-end: #D1FAE5;
+    --glass-bg: rgba(255, 255, 255, 0.25);
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --danger-color: #D32F2F;
+    --danger-color-hover: #B71C1C;
+
+}
+
+.btn-primary {
+    padding: 12px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: var(--secondary-color);
+}
+
+/* Estilos específicos para a página de registros da portaria */
 
 .title-with-actions {
     display: flex;
@@ -7,14 +34,6 @@
     margin-bottom: 20px;
     flex-wrap: wrap;
     gap: 10px;
-}
-
-.modal-content {
-    max-width: 600px;
-    margin: auto;
-    padding: 10px;
-    border-radius: 12px;
-    background: #ffffff;
 }
 
 .action-buttons {
@@ -62,7 +81,9 @@
     padding: 12px;
     text-align: left;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    white-space: nowrap;
 }
+
 
 #vehiclesTable th {
     background-color: rgba(0, 0, 0, 0.1);
@@ -130,6 +151,12 @@
     }
 }
 
+/* Espaçamento entre os botões alterar e delete na tabela */
+#vehiclesTable .btn-primary {
+    margin-right: 12px; /* Espaço à direita do botão alterar */
+}
+
+
 /* Estilo para o botão de ações na tabela */
 #vehiclesTable button {
     padding: 6px 12px;
@@ -150,40 +177,6 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
-}
-
-/* Estilos para o modal de foto */
-.photo-upload-container {
-    max-width: 100%;
-    margin: 0 auto;
-}
-
-.preview-container {
-    margin: 15px 0;
-    text-align: center;
-}
-
-.preview-container img,
-.preview-container video {
-    max-width: 100%;
-    max-height: 300px;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    border-radius: 8px;
-}
-
-.upload-options {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 15px;
-}
-
-/* Ajuste para o modal do SweetAlert2 */
-.swal2-popup {
-    max-width: 90% !important;
-    width: 400px !important;
 }
 
 .modal.hidden {
@@ -237,6 +230,51 @@
     border-color: #F57C00;
 }
 
+/* Notification badge */
+.notification-badge,
+.notification-badge.total-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    min-width: 18px;
+    height: 18px;
+    background-color: #ff0707;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    color: #fcfcfc;
+    font-weight: bold;
+    font-size: 12px;
+    line-height: 18px;
+    text-align: center;
+    padding: 0 5px;
+    box-sizing: border-box;
+    white-space: nowrap;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 2s infinite;
+}
+
+.notification-badge.hidden {
+    display: none;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+    }
+    70% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+    }
+}
+
 /* Status badges */
 .status-badge {
     padding: 4px 8px;
@@ -257,12 +295,12 @@
 }
 
 .status-badge.unscheduled {
-    background-color: #fc381a;
+        background-color: #fc381a;
     color: #fafafa;
 }
 
 .status-badge.completed {
-    background-color: #E8F5E9;
+        background-color: #E8F5E9;
     color: #2E7D32;
 }
 
@@ -275,39 +313,32 @@
     background-color: #E3F2FD;
     color: #1565C0;
 }
-
 /* Notification badge */
 .btn-primary {
     position: relative;
 }
 
-.notification-badge,
-.notification-badge.total-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    width: 20px;
-    height: 20px;
-    background-color: #e41405; /* Vermelho */
-    border-radius: 50%;
-    border: 2px solid #fff;
-    color: #fff;
-    font-weight: bold;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1;
-    animation: pulse-badge 2s infinite;
-    box-sizing: border-box;
-    white-space: nowrap;
-    text-align: center;
-    padding: 0;
+.notification-badge.hidden {
+    display: none;
 }
 
-.notification-badge.hidden,
-.success-badge.hidden {
-    display: none;
+.filters select,
+.filters input[type="date"],
+.filters input[type="time"],
+.filters input[type="text"] {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: border 0.3s;
+}
+
+.filters select:focus,
+.filters input:focus {
+    border-color: #2E7D32;
+    outline: none;
 }
 
 .success-badge {
@@ -328,18 +359,51 @@
     z-index: 1;
 }
 
-/* Animação ajustada para evitar tremer conteúdo */
-@keyframes pulse-badge {
-    0% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7);
-    }
-    70% {
-        transform: scale(1.1);
-        box-shadow: 0 0 0 10px rgba(244, 67, 54, 0);
-    }
-    100% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(244, 67, 54, 0);
-    }
+#vehiclesTable tr:hover {
+    background-color: rgba(46, 125, 50, 0.08); /* verde translúcido */
+}
+
+#vehiclesTable th,
+#vehiclesTable td {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+
+/* Botão delete em vermelho */
+.btn-danger {
+    padding: 12px;
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btn-danger:hover {
+    background: var(--danger-color-hover);
+}
+
+/* Animação do botão delete igual ao botão alterar */
+.btn-danger {
+    transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-danger:hover {
+    background: var(--danger-color-hover); /* já existente */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.no-data-message {
+    text-align: center;
+    font-style: italic;
+    color: #666666;
+    padding: 20px 0;
+    font-size: 1.1em;
+}
+
+.no-data-message i {
+    margin-right: 8px;
+    color: #2E7D32; /* cor verde para o ícone */
 }

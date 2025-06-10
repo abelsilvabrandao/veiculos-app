@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registros da Portaria - Controle de Veículos</title>
+    <link rel="icon" type="image/png" href="img/icons/icone.png">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/registros-portaria.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2E7D32">
@@ -15,7 +17,7 @@
 </head>
 <body class="bg-gradient">
     <div class="container">
-        <header class="app-header glass-effect">
+                <header class="app-header glass-effect">
             <div class="user-info">
                 <div class="profile-wrapper">
                     <div class="profile-container">
@@ -25,13 +27,13 @@
                 </div>
                 <div class="user-details">
                     <span id="userName">Usuário</span>
-                    <small>Clique na foto para alterar</small>
                 </div>
             </div>
             <div class="datetime-weather">
                 <div id="weather" class="weather-widget">
                     <div id="currentDateTime"></div>
                     <div style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-map-marker-alt"></i>
                         <div id="cityName" style="font-weight: bold; color: #666666;"></div>
                         <canvas id="weatherAnimation" style="width: 40px; height: 40px; display: none;"></canvas>
                         <div id="temperature" style="font-weight: bold; color: #2E7D32; font-size: 1.1em;">--°C</div>
@@ -40,7 +42,10 @@
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <canvas id="windAnimation" style="width: 40px; height: 40px;"></canvas>
                         <div id="windSpeed" style="font-weight: bold; color: #666666;">-- km/h</div>
-                    </div>
+                </div>
+                <div class="title-with-button" style="width: 100%; display: flex; justify-content: center; align-items: center; margin-top: 10px;">
+                <h1 style="color: #10B981; font-size: 2rem; font-weight: bold; display: flex; align-items: center; gap: 10px; margin: 0;">
+                <i class="fas fa-clipboard-list"></i> PORTARIA</h1>
                 </div>
             </div>
         </header>
@@ -60,12 +65,45 @@
 
             <div class="filters">
                 <div class="search-container">
-                    <input type="text" id="searchInput" placeholder="Buscar por placa, motorista...">
+                    <input type="text" id="searchInput" placeholder="Buscar por placa ou motorista...">
                 </div>
-                <div class="date-filter">
-                    <input type="date" id="dateFilter" class="date-input">
-                </div>
+                <div class="status-filter">
+                <label for="statusSelect">Status:</label>
+                <select id="statusSelect" class="form-control">
+                <option value="all" selected>Todos</option>
+                <option value="pending">Pendente</option>
+                <option value="aguardando">Aguardando</option>
+                <option value="scheduled">Na Programação</option>
+                <option value="unscheduled">Fora da Programação</option>
+                <option value="completed">Concluído</option>
+                <option value="cancelled">Cancelado</option>
+                </select>
+                <div class="pending-filter" style="margin-top: 10px;">
+                <label for="pendingSelect">Pendências:</label>
+                <select id="pendingSelect" class="form-control">
+                <option value="all" selected>Todos</option>
+                <option value="with">Com Pendências</option>
+                <option value="without">Sem Pendências</option>
+            </select>
             </div>
+            </div>
+            <div class="date-time-filter">
+            <label for="startDate">Data Inicial:</label>
+            <input type="date" id="startDate" class="form-control">
+
+            <label for="startTime">Hora Inicial:</label>
+            <input type="time" id="startTime" class="form-control">
+
+            <label for="endDate">Data Final:</label>
+            <input type="date" id="endDate" class="form-control">
+
+            <label for="endTime">Hora Final:</label>
+            <input type="time" id="endTime" class="form-control">
+            <button id="exportExcelBtn" class="btn-primary" title="Exportar para Excel">
+            <i class="fas fa-file-excel"></i> Exportar Excel
+            </button>
+            </div>
+          </div>
 
             <div class="vehicles-list">
                 <table id="vehiclesTable">
@@ -78,6 +116,7 @@
                             <th>Telefone</th>
                             <th>Container</th>
                             <th>Status</th>
+                            <th>Observações</th>
                             <th>Ações</th>
                         </tr>
                     </thead>

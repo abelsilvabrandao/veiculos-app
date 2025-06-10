@@ -1,6 +1,6 @@
 {
   "name": "Sistema de Controle de Entrada - Porto",
-  "short_name": "Controle Porto",
+  "short_name": "Controle Portaria",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",

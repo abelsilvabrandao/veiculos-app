@@ -1,4 +1,4 @@
-import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, serverTimestamp, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, serverTimestamp, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { app } from './main.js';
 
@@ -6,7 +6,6 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 let currentVehicleId = null;
-
 let currentVehicles = [];
 let selectedVehicle = null;
 
@@ -15,8 +14,10 @@ function loadVehicles(dateFilter = '') {
     let q = query(collection(db, 'veiculos'), orderBy('createdAt', 'desc'));
 
     if (dateFilter) {
-        const start = new Date(dateFilter); start.setHours(0, 0, 0, 0);
-        const end = new Date(dateFilter); end.setHours(23, 59, 59, 999);
+        const start = new Date(dateFilter); 
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(dateFilter); 
+        end.setHours(23, 59, 59, 999);
         q = query(collection(db, 'veiculos'),
             where('createdAt', '>=', start),
             where('createdAt', '<=', end),
@@ -27,6 +28,17 @@ function loadVehicles(dateFilter = '') {
         currentVehicles = [];
         const tableBody = document.getElementById('vehiclesTableBody');
         tableBody.innerHTML = '';
+
+        if (snapshot.empty) {
+            const noDataRow = document.createElement('tr');
+            noDataRow.innerHTML = `
+                <td colspan="8" class="no-data-message">
+                    <i class="fas fa-info-circle"></i> Nenhum veículo registrado.
+                </td>
+            `;
+            tableBody.appendChild(noDataRow);
+            return;
+        }
 
         snapshot.forEach((doc) => {
             const data = doc.data();
@@ -55,6 +67,7 @@ function loadVehicles(dateFilter = '') {
                           data.status === 'pending' ? 'Pendente' : 'Aguardando'}
                     </span>
                 </td>
+                <td>${data.observations || '-'}</td>
                 <td>
                     <button onclick="openActionModal('${doc.id}')" class="btn-primary position-relative">
                         <i class="fas fa-edit"></i>
@@ -65,62 +78,113 @@ function loadVehicles(dateFilter = '') {
                                 : '')
                         }
                     </button>
+                        <button class="btn-danger btn-delete position-relative" title="Excluir registro" onclick="deleteVehicle('${doc.id}')">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
                 </td>
             `;
             tableBody.appendChild(row);
         });
     });
 }
+
+window.deleteVehicle = async function(docId) {
+    const result = await Swal.fire({
+        title: 'Confirmar exclusão',
+        text: 'Tem certeza que deseja excluir este registro?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sim, excluir',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6'
+    });
+
+    if (result.isConfirmed) {
+        try {
+            await deleteDoc(doc(db, 'veiculos', docId));
+            Swal.fire({
+                icon: 'success',
+                title: 'Registro excluído',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        } catch (error) {
+            console.error('Erro ao excluir registro:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: 'Não foi possível excluir o registro.'
+            });
+        }
+    }
+}
 // Filtrar registros
 function filterVehicles(searchTerm) {
     const tableBody = document.getElementById('vehiclesTableBody');
     tableBody.innerHTML = '';
 
-    currentVehicles.forEach(vehicle => {
-        if (
+    // Filtra os veículos com base no termo de busca
+    const filteredVehicles = currentVehicles.filter(vehicle => {
+        return (
             vehicle.plate.toLowerCase().includes(searchTerm) ||
             vehicle.trailerPlate?.toLowerCase().includes(searchTerm) ||
             vehicle.driverName?.toLowerCase().includes(searchTerm) ||
             vehicle.driverPhone?.toLowerCase().includes(searchTerm)
-        ) {
-            const docPending = vehicle.documentPhotoRequested && !vehicle.docPhoto;
-            const vehPending = vehicle.vehiclePhotoRequested && !vehicle.vehiclePhoto;
+        );
+    });
 
-            const totalPending = [docPending, vehPending].filter(Boolean).length;
-            const showSuccess = (vehicle.documentPhotoRequested || vehicle.vehiclePhotoRequested) && totalPending === 0;
+    // Se não encontrar veículos após o filtro, exibe mensagem
+    if (filteredVehicles.length === 0) {
+        const noResultsRow = document.createElement('tr');
+        noResultsRow.innerHTML = `
+            <td colspan="8" class="no-data-message">
+                <i class="fas fa-info-circle"></i> Nenhum veículo encontrado.
+            </td>
+        `;
+        tableBody.appendChild(noResultsRow);
+        return;
+    }
 
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${vehicle.createdAt ? new Date(vehicle.createdAt.toDate()).toLocaleString() : ''}</td>
-                <td>${vehicle.plate}</td>
-                <td>${vehicle.trailerPlate || '-'}</td>
-                <td>${vehicle.driverName || '-'}</td>
-                <td>${vehicle.driverPhone || '-'}</td>
-                <td>${vehicle.container || '-'}</td>
-                <td>
-                    <span class="status-badge ${vehicle.status}">
-                        ${vehicle.status === 'scheduled' ? 'Na Programação' :
-                          vehicle.status === 'unscheduled' ? 'Fora da Programação' :
-                          vehicle.status === 'completed' ? 'Concluído' :
-                          vehicle.status === 'cancelled' ? 'Cancelado' :
-                          vehicle.status === 'pending' ? 'Pendente' : 'Aguardando'}
-                    </span>
-                </td>
-                <td>
-                    <button onclick="openActionModal('${vehicle.id}')" class="btn-primary position-relative">
-                        <i class="fas fa-edit"></i>
-                        ${
-                          totalPending > 0
-                            ? `<span class="notification-badge total-badge">${totalPending}</span>`
-                            : (showSuccess
-                                ? '<span class="success-badge"><i class="fas fa-check"></i></span>'
-                                : '')
-                        }
-                    </button>
-                </td>
-            `;
-            tableBody.appendChild(row);
-        }
+    // Caso encontre veículos, renderiza as linhas normalmente
+    filteredVehicles.forEach(vehicle => {
+        const docPending = vehicle.documentPhotoRequested && !vehicle.docPhoto;
+        const vehPending = vehicle.vehiclePhotoRequested && !vehicle.vehiclePhoto;
+
+        const totalPending = [docPending, vehPending].filter(Boolean).length;
+        const showSuccess = (vehicle.documentPhotoRequested || vehicle.vehiclePhotoRequested) && totalPending === 0;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${vehicle.createdAt ? new Date(vehicle.createdAt.toDate()).toLocaleString() : ''}</td>
+            <td>${vehicle.plate}</td>
+            <td>${vehicle.trailerPlate || '-'}</td>
+            <td>${vehicle.driverName || '-'}</td>
+            <td>${vehicle.driverPhone || '-'}</td>
+            <td>${vehicle.container || '-'}</td>
+            <td>
+                <span class="status-badge ${vehicle.status}">
+                    ${vehicle.status === 'scheduled' ? 'Na Programação' :
+                      vehicle.status === 'unscheduled' ? 'Fora da Programação' :
+                      vehicle.status === 'completed' ? 'Concluído' :
+                      vehicle.status === 'cancelled' ? 'Cancelado' :
+                      vehicle.status === 'pending' ? 'Pendente' : 'Aguardando'}
+                </span>
+            </td>
+            <td>
+                <button onclick="openActionModal('${vehicle.id}')" class="btn-primary position-relative">
+                    <i class="fas fa-edit"></i>
+                    ${
+                      totalPending > 0
+                        ? `<span class="notification-badge total-badge">${totalPending}</span>`
+                        : (showSuccess
+                            ? '<span class="success-badge"><i class="fas fa-check"></i></span>'
+                            : '')
+                    }
+                </button>
+            </td>
+        `;
+        tableBody.appendChild(row);
     });
 }
 
@@ -460,3 +524,63 @@ auth.onAuthStateChanged((user) => {
         loadVehicles();
     }
 });
+
+function exportTableToExcel(filename) {
+    const table = document.getElementById('vehiclesTable');
+    const worksheetData = [];
+
+    const rows = table.querySelectorAll('tr');
+    let ignoreIndex = -1;
+
+    for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+        const row = rows[rowIndex];
+        const cells = row.querySelectorAll('th, td');
+        const rowData = [];
+
+        if (rowIndex === 0) {
+            cells.forEach((cell, i) => {
+                if (cell.innerText.trim().toLowerCase() === 'ações') {
+                    ignoreIndex = i;
+                }
+            });
+        }
+
+        cells.forEach((cell, i) => {
+            if (rowIndex === 0) {
+                if (cell.innerText.trim().toLowerCase() === 'data/hora') {
+                    rowData.push('Data');
+                    rowData.push('Hora');
+                } else if (i !== ignoreIndex) {
+                    rowData.push(cell.innerText);
+                }
+            } else {
+                if (i === 0) {
+                    const parts = cell.innerText.split(',');
+                    if (parts.length === 2) {
+                        rowData.push(parts[0].trim());
+                        rowData.push(parts[1].trim());
+                    } else {
+                        rowData.push(cell.innerText.trim());
+                        rowData.push('');
+                    }
+                } else if (i !== ignoreIndex) {
+                    rowData.push(cell.innerText);
+                }
+            }
+        });
+
+        worksheetData.push(rowData);
+    }
+
+    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Registros');
+
+    XLSX.writeFile(workbook, filename);
+}
+
+// Evento do botão
+document.getElementById('exportExcelBtn').addEventListener('click', () => {
+    exportTableToExcel('Registros_Portaria.xlsx');
+});
+

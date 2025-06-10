@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portaria - Controle de Veículos</title>
+    <link rel="icon" type="image/png" href="img/icons/icone.png">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/portaria.css">
@@ -25,13 +26,13 @@
                 </div>
                 <div class="user-details">
                     <span id="userName">Usuário</span>
-                    <small>Clique na foto para alterar</small>
                 </div>
             </div>
             <div class="datetime-weather">
                 <div id="weather" class="weather-widget">
                     <div id="currentDateTime"></div>
                     <div style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-map-marker-alt"></i>
                         <div id="cityName" style="font-weight: bold; color: #666666;"></div>
                         <canvas id="weatherAnimation" style="width: 40px; height: 40px; display: none;"></canvas>
                         <div id="temperature" style="font-weight: bold; color: #2E7D32; font-size: 1.1em;">--°C</div>
@@ -40,7 +41,10 @@
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <canvas id="windAnimation" style="width: 40px; height: 40px;"></canvas>
                         <div id="windSpeed" style="font-weight: bold; color: #666666;">-- km/h</div>
-                    </div>
+                </div>
+                <div class="title-with-button" style="width: 100%; display: flex; justify-content: center; align-items: center; margin-top: 10px;">
+                <h1 style="color: #10B981; font-size: 2rem; font-weight: bold; display: flex; align-items: center; gap: 10px; margin: 0;">
+                <i class="fas fa-clipboard-list"></i> PORTARIA</h1>
                 </div>
             </div>
         </header>
@@ -65,10 +69,11 @@
                                        placeholder="ABC1D23 / ABC1234" maxlength="7"
                                        title="Formato: ABC1D23 ou ABC1234">
                             </div>
-                            <button type="button" id="addTrailerPlate" class="btn-secondary" style="margin-top: 2px">
+
+                        </div>
+                        <button type="button" id="addTrailerPlate" class="btn-secondary" style="margin-top: 2px">
                                 <i class="fas fa-plus"></i> Carreta
                             </button>
-                        </div>
                     </div>
 
                     <div class="form-group" id="trailerPlateGroup" style="display: none">
@@ -126,10 +131,13 @@
                 <!-- Lista de Registros Recentes -->
                 <div class="recent-entries">
                     <h3>Últimos Registros</h3>
-                    </button>
-                    <a href="registros-portaria.html" class="btn-primary">
-                        <i class="fas fa-list"></i> Ver Registros
-                    </a>
+                    <div class="button-container">
+                        <a href="registros-portaria.html" class="btn-primary">
+                            <i class="fas fa-list"></i> Registros
+                        </a>
+                        <div id="totalPendenciasDisplay" class="pendencias-display">
+                        </div>
+                    </div>
                     <div id="recentEntriesList"></div>
                 </div>
             </form>

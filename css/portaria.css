@@ -27,8 +27,8 @@
     position: absolute;
     top: -8px;
     right: -8px;
-    background-color: #FFC107;
-    color: #000;
+    background-color: #db2d06;
+    color: #fdfcfc;
     border-radius: 50%;
     width: 20px;
     height: 20px;
@@ -44,7 +44,7 @@
 @keyframes pulse {
     0% {
         transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+        box-shadow: 0 0 0 0 rgba(235, 73, 19, 0.7);
     }
     70% {
         transform: scale(1.1);
@@ -56,37 +56,42 @@
     }
 }
 
-.plate-number {
+.plate-number, .trailer-plate {
     font-size: 1.1em;
     color: #2E7D32;
-    margin-right: 5px;
+    font-weight: 600;
 }
 
 .trailer-plate {
-    color: #666666;
-    font-size: 0.9em;
+    color: #2E7D32;
+    font-size: 1.1em;
 }
 
 .entry-details {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 2px;
 }
 
 .driver-name {
-    color: #666666;
-    font-size: 0.9em;
+    font-weight: 800;
+    color: #333;
+    display: block;
+    margin-bottom: 4px;
 }
 
-.container-number {
-    color: #666666;
-    font-size: 0.85em;
-    font-family: monospace;
+.container-number, .driver-phone {
+    color: #666;
+    font-size: 0.9em;
+    display: block;
+    margin-bottom: 2px;
 }
 
 .timestamp {
-    color: #888888;
-    font-size: 0.8em;
+    color: #888;
+    font-size: 0.85em;
+    display: block;
+    margin-top: 4px;
 }
 
 .entry-status {
@@ -94,11 +99,14 @@
 }
 
 .status-badge {
-    padding: 5px 10px;
+    padding: 6px 12px;
     border-radius: 15px;
-    font-size: 0.8em;
+    font-size: 0.85em;
     font-weight: 500;
     text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 /* Status badges */
 .status-badge.pending {
@@ -167,6 +175,12 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+h2 {
+    color: #666666;
+    margin-bottom: 15px;
+    font-size: 1.3em;
+    
+}
 
 .recent-entries {
     margin-top: 30px;
@@ -263,3 +277,24 @@
         margin-top: 10px;
     }
 }
+
+.button-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+
+.pendencias-display {
+    background-color: #FFC107;
+    color: #333;
+    font-weight: bold;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+}
+
+

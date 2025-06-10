@@ -1,0 +1,89 @@
+.profile-wrapper {
+    position: relative; /* 🔑 Faz o .profile-menu se posicionar corretamente */
+    display: inline-block;
+    width: auto;
+    height: auto;
+    z-index: 9999;
+}
+
+.profile-container {
+    width: 56px;
+    height: 56px;
+    cursor: pointer;
+    border-radius: 9999px;
+    overflow: hidden;
+    background-color: var(--primary-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.profile-container:hover {
+    transform: scale(1.05);
+}
+
+.profile-pic {
+    width: 100%;
+    height: 100%;
+    border-radius: 9999px;
+    object-fit: cover;
+    border: 2px solid var(--primary-color);
+    transition: all 0.2s;
+}
+
+.profile-menu {
+    display: none;
+    position: fixed;
+    top: 90px;
+    left: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    width: 240px;
+    z-index: 9999;
+    flex-direction: column;
+    padding: 12px 0;
+}
+
+
+.profile-menu.visible {
+    display: flex !important;
+}
+
+.profile-menu-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 4px;
+}
+
+.profile-pic-menu {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    margin-right: 12px;
+    border: 2px solid var(--primary-color);
+}
+
+.user-name-menu {
+    font-weight: bold;
+    color: #333;
+}
+
+.profile-menu-options {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.profile-menu-options li {
+    padding: 12px 16px;
+    cursor: pointer;
+    color: #2E7D32;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.profile-menu-options li:hover {
+    background-color: #f0fdf4;
+}

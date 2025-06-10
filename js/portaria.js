@@ -1,4 +1,4 @@
-import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { collection, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { app } from './main.js';
 
@@ -269,7 +269,7 @@ function loadRecentEntries() {
 
     onSnapshot(q, (snapshot) => {
         const entriesList = document.getElementById('recentEntriesList');
-        if (!entriesList) return; // Elemento pode não existir em todas as páginas
+        if (!entriesList) return;
 
         entriesList.innerHTML = '';
 
@@ -311,7 +311,8 @@ function loadRecentEntries() {
                     <div class="entry-details">
                         <span class="driver-name">${data.driverName || 'Motorista não informado'}</span>
                         ${data.container ? `<span class="container-number">Container: ${data.container}</span>` : ''}
-                        <small class="timestamp">${formattedDate}</small>
+                        ${data.driverPhone ? `<span class="driver-phone">Telefone: ${data.driverPhone}</span>` : ''}
+                        <small class="timestamp">Chegada: ${formattedDate}</small>
                     </div>
                 </div>
                 <div class="entry-status">
@@ -329,5 +330,34 @@ function loadRecentEntries() {
 auth.onAuthStateChanged((user) => {
     if (user) {
         loadRecentEntries();
+        monitorarPendenciasEmTempoReal();
     }
 });
+
+function monitorarPendenciasEmTempoReal() {
+    const q = query(collection(db, 'veiculos'));
+
+    onSnapshot(q, (snapshot) => {
+        let totalPendencias = 0;
+
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const docPending = data.documentPhotoRequested && !data.docPhoto;
+            const vehPending = data.vehiclePhotoRequested && !data.vehiclePhoto;
+            if (docPending || vehPending) totalPendencias++;
+        });
+
+        const display = document.getElementById('totalPendenciasDisplay');
+        if (display) {
+            if (totalPendencias > 0) {
+                display.style.display = 'inline-block';
+                display.textContent = `${totalPendencias} Pendência${totalPendencias > 1 ? 's' : ''}`;
+            } else {
+                display.style.display = 'none';
+                display.textContent = '';
+            }
+        }
+    });
+}
+
+

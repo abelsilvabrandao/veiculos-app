@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Controle de Entrada - Porto</title>
+    <link rel="icon" type="image/png" href="img/icons/icone.png">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/login.css">
     <link rel="icon" type="image/png" href="img/favicon.png">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -36,18 +38,25 @@
             <header class="app-header glass-effect">
                 <div class="user-info">
                     <div style="display: flex; align-items: center; gap: 15px;">
-                        <div class="profile-wrapper">
-                            <div class="profile-container">
-                                <img src="img/avatar-inicial.png" alt="Foto de Perfil" id="profilePic" class="profile-pic" title="Clique para alterar a foto">
-                            </div>
-                            <span class="online-status"></span>
-                        </div>
-                        <div class="user-details">
-                            <span id="userName" style="color: #666666; cursor: pointer;" title="Clique para editar seu nome"></span>
-                            <i class="fas fa-edit" style="color: #666666; font-size: 0.8em; margin-left: 5px; cursor: pointer;" title="Editar nome"></i>
-                            <small>Clique na foto para alterar</small>
-                        </div>
-                    </div>
+  <div class="profile-wrapper">
+    <div class="profile-container" id="profileContainer">
+      <img id="profilePic" class="profile-pic" src="img/avatar-inicial.png" alt="Avatar">
+    </div>
+  </div>
+  <div id="profileMenu" class="profile-menu hidden">
+  <div class="profile-menu-header">
+    <img src="img/avatar-inicial.png" alt="Avatar" class="profile-pic-menu" id="profilePicMenu">
+    <div id="userName" class="user-name-menu">Nome do Usuário</div>
+  </div>
+  <ul class="profile-menu-options">
+    <li id="changeAvatarBtn">Trocar o avatar</li>
+    <li id="editNameBtn">Editar Nome</li>
+    <li id="logoutBtn">Sair</li>
+  </ul>
+</div>
+
+</div>
+
                 </div>
                 <div class="datetime-weather">
                     <div id="weather" class="weather-widget">
@@ -82,9 +91,6 @@
             <div id="accessMenu" class="access-menu glass-effect hidden">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2 style="color: #666666; margin: 0;">Olá, <span id="welcomeName" style="color: #666666;">Usuário</span>!</h2>
-                    <button id="logoutBtnMenu" class="btn-icon glass-effect" title="Sair" style="margin-left: 15px;">
-                        <i class="fas fa-power-off" style="color: #666666;"></i>
-                    </button>
                 </div>
                 <div class="menu-buttons">
                     <a href="portaria.html" class="menu-button btn-primary" style="padding: 15px 25px; font-size: 0.9em;">
@@ -107,10 +113,12 @@
     <script type="module" src="js/main.js"></script>
     <script type="module" src="js/auth.js"></script>
     <script type="module" src="js/app.js"></script>
-    <script type="module" src="js/profile.js"></script>
+    <script type="module" src="js/user-profile.js"></script>
+
+  <!--   <script type="module" src="js/profile.js"></script> -->
     <script type="module" src="js/weather.js"></script>
-    <script type="module" src="js/profile-image.js"></script>
-    <script type="module" src="js/edit-name.js"></script>
+ <!--    <script type="module" src="js/profile-image.js"></script> -->
+   <!-- <script type="module" src="js/edit-name.js"></script> -->
     <!-- Modal de Recorte de Imagem -->
     <div id="cropperModal" class="modal hidden">
         <div class="modal-content">

@@ -81,16 +81,13 @@ function loadProfilePicture() {
     const user = auth.currentUser;
     const savedPic = localStorage.getItem('userProfilePic');
 
-    document.querySelectorAll('.profile-pic').forEach(pic => {
-        if (user?.photoURL) {
-            pic.src = user.photoURL;
-        } else if (savedPic) {
-            pic.src = savedPic;
-        } else {
-            pic.src = 'img/avatar-inicial.png';
-        }
+    const newSrc = user?.photoURL || savedPic || 'img/avatar-inicial.png';
+
+    document.querySelectorAll('.profile-pic, .profile-pic-menu').forEach(pic => {
+        pic.src = newSrc;
     });
 }
+
 
 auth.onAuthStateChanged(user => {
     if (user) {

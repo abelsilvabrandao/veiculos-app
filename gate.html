@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gate - Controle de Veículos</title>
+    <link rel="icon" type="image/png" href="img/icons/icone.png">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/gate.css">
@@ -13,7 +14,7 @@
     <meta name="theme-color" content="#2E7D32">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="https://cdn.jsdelivr.net/npm/@lottiefiles/dotlottie-web/+esm"></script>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body class="bg-gradient">
     <div class="container">
@@ -27,13 +28,13 @@
                 </div>
                 <div class="user-details">
                     <span id="userName">Usuário</span>
-                    <small>Clique na foto para alterar</small>
                 </div>
             </div>
             <div class="datetime-weather">
                 <div id="weather" class="weather-widget">
                     <div id="currentDateTime"></div>
                     <div style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-map-marker-alt"></i>
                         <div id="cityName" style="font-weight: bold; color: #666666;"></div>
                         <canvas id="weatherAnimation" style="width: 40px; height: 40px; display: none;"></canvas>
                         <div id="temperature" style="font-weight: bold; color: #2E7D32; font-size: 1.1em;">--°C</div>
@@ -42,7 +43,10 @@
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <canvas id="windAnimation" style="width: 40px; height: 40px;"></canvas>
                         <div id="windSpeed" style="font-weight: bold; color: #666666;">-- km/h</div>
-                    </div>
+                </div>
+                <div class="title-with-button" style="width: 100%; display: flex; justify-content: center; align-items: center; margin-top: 10px;">
+                <h1 style="color: #10B981; font-size: 2rem; font-weight: bold; display: flex; align-items: center; gap: 10px; margin: 0;">
+                <i class="fas fa-door-open"></i> GATE</h1>
                 </div>
             </div>
         </header>
@@ -60,6 +64,7 @@
                     <input type="text" id="searchInput" placeholder="Buscar por placa ou motorista...">
                 </div>
                 <div class="status-filter">
+                <label for="statusSelect">Status:</label>
                 <select id="statusSelect" class="form-control">
                 <option value="all" selected>Todos</option>
                 <option value="pending">Pendente</option>
@@ -90,8 +95,11 @@
 
             <label for="endTime">Hora Final:</label>
             <input type="time" id="endTime" class="form-control">
+            <button id="exportExcelBtn" class="btn-primary" title="Exportar para Excel">
+            <i class="fas fa-file-excel"></i> Exportar Excel
+            </button>
             </div>
-            </div>
+          </div>
             <div class="vehicles-list">
                 <table id="vehiclesTable" class="table-hover">
                     <thead>

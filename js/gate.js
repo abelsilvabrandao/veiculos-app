@@ -1,4 +1,4 @@
-import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { getFirestore, collection, query, orderBy, deleteDoc, onSnapshot, doc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { app } from './main.js';
 
@@ -20,11 +20,21 @@ function loadVehicles() {
         const tableBody = document.getElementById('vehiclesTableBody');
         tableBody.innerHTML = '';
 
+        if (snapshot.empty) {
+            const noDataRow = document.createElement('tr');
+            noDataRow.innerHTML = `
+                <td colspan="9" class="no-data-message">
+                    <i class="fas fa-info-circle"></i> Nenhum veículo registrado.
+                </td>
+            `;
+            tableBody.appendChild(noDataRow);
+            return;
+        }
+
         snapshot.forEach((doc) => {
             const data = doc.data();
             currentVehicles.push({ id: doc.id, ...data });
 
-            const row = document.createElement('tr');
             const statusClass = data.status === 'aguardando' ? 'aguardando' :
                 data.status === 'scheduled' ? 'scheduled' :
                 data.status === 'unscheduled' ? 'unscheduled' :
@@ -37,21 +47,20 @@ function loadVehicles() {
                 data.status === 'completed' ? 'Concluído' :
                 data.status === 'cancelled' ? 'Cancelado' : 'Pendente';
 
-            // ✅ Cálculo dos badges
             const docRequested = data.documentPhotoRequested;
             const vehRequested = data.vehiclePhotoRequested;
 
             const docPending = docRequested && !data.docPhoto;
             const vehPending = vehRequested && !data.vehiclePhoto;
 
-            const totalRequested = (docRequested ? 1 : 0) + (vehRequested ? 1 : 0);
             const totalPending = (docPending ? 1 : 0) + (vehPending ? 1 : 0);
             const showSuccess = (!!data.docPhoto || !data.documentPhotoRequested) &&
-                    (!!data.vehiclePhoto || !data.vehiclePhotoRequested) &&
-                    (data.docPhoto || data.vehiclePhoto);
+                (!!data.vehiclePhoto || !data.vehiclePhotoRequested) &&
+                (data.docPhoto || data.vehiclePhoto);
 
             const showPending = totalPending > 0;
 
+            const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${data.createdAt ? new Date(data.createdAt.toDate()).toLocaleString() : ''}</td>
                 <td>${data.plate}</td>
@@ -75,13 +84,16 @@ function loadVehicles() {
                             : '')
                         }
                     </button>
+                    <button class="btn-danger btn-delete position-relative" title="Excluir registro" onclick="deleteVehicle('${doc.id}')">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
                 </td>
             `;
 
             tableBody.appendChild(row);
         });
 
-        // ✅ Atualizar os badges gerais de pendências após carregar
+        // Atualizar os badges gerais de pendências após carregar
         const pendencias = contarPendencias();
         const badgeDocContainer = document.getElementById('badgeDoc');
         const badgeVehicleContainer = document.getElementById('badgeVehicle');
@@ -97,8 +109,47 @@ function loadVehicles() {
                 ? `<span class="notification-badge vehicle-badge">${pendencias.countVehicle}</span>`
                 : '';
         }
+
+        const totalPendenciasDisplay = document.getElementById('totalPendenciasDisplay');
+        if (totalPendenciasDisplay) {
+            const totalPendencias = pendencias.countDoc + pendencias.countVehicle;
+            totalPendenciasDisplay.textContent = `${totalPendencias} pendência${totalPendencias !== 1 ? 's' : ''}`;
+        }
     });
 }
+
+window.deleteVehicle = async function(docId) {
+    const result = await Swal.fire({
+        title: 'Confirmar exclusão',
+        text: 'Tem certeza que deseja excluir este registro?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sim, excluir',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6'
+    });
+
+    if (result.isConfirmed) {
+        try {
+            await deleteDoc(doc(db, 'veiculos', docId));
+            Swal.fire({
+                icon: 'success',
+                title: 'Registro excluído',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        } catch (error) {
+            console.error('Erro ao excluir registro:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: 'Não foi possível excluir o registro.'
+            });
+        }
+    }
+}
+
 
 function contarPendencias() {
     let countDoc = currentVehicles.filter(v => v.documentPhotoRequested && !v.docPhoto).length;
@@ -150,7 +201,7 @@ function filterVehicles(searchTerm) {
     const tableBody = document.getElementById('vehiclesTableBody');
     tableBody.innerHTML = '';
 
-    currentVehicles.forEach(vehicle => {
+    const filteredVehicles = currentVehicles.filter(vehicle => {
         const matchesSearch = vehicle.plate.toLowerCase().includes(searchTerm) ||
             vehicle.trailerPlate?.toLowerCase().includes(searchTerm) ||
             vehicle.driverName?.toLowerCase().includes(searchTerm);
@@ -178,64 +229,74 @@ function filterVehicles(searchTerm) {
             matchesPending = !hasPending;
         }
 
-        if (matchesSearch && matchesStatus && matchesDateTime && matchesPending) {
-            const row = document.createElement('tr');
+        return matchesSearch && matchesStatus && matchesDateTime && matchesPending;
+    });
 
-            const statusClass = vehicle.status === 'aguardando' ? 'aguardando' :
-                vehicle.status === 'scheduled' ? 'scheduled' :
-                vehicle.status === 'unscheduled' ? 'unscheduled' :
-                vehicle.status === 'completed' ? 'completed' :
-                vehicle.status === 'cancelled' ? 'cancelled' : 'pending';
+    if (filteredVehicles.length === 0) {
+        const noResultsRow = document.createElement('tr');
+        noResultsRow.innerHTML = `
+            <td colspan="9" class="no-data-message">
+                <i class="fas fa-info-circle"></i> Nenhum veículo encontrado.
+            </td>
+        `;
+        tableBody.appendChild(noResultsRow);
+        return;
+    }
 
-            const statusText = vehicle.status === 'aguardando' ? 'Aguardando' :
-                vehicle.status === 'scheduled' ? 'Na Programação' :
-                vehicle.status === 'unscheduled' ? 'Fora da Programação' :
-                vehicle.status === 'completed' ? 'Concluído' :
-                vehicle.status === 'cancelled' ? 'Cancelado' : 'Pendente';
+    filteredVehicles.forEach(vehicle => {
+        const statusClass = vehicle.status === 'aguardando' ? 'aguardando' :
+            vehicle.status === 'scheduled' ? 'scheduled' :
+            vehicle.status === 'unscheduled' ? 'unscheduled' :
+            vehicle.status === 'completed' ? 'completed' :
+            vehicle.status === 'cancelled' ? 'cancelled' : 'pending';
 
-            const docRequested = vehicle.documentPhotoRequested;
-            const vehRequested = vehicle.vehiclePhotoRequested;
+        const statusText = vehicle.status === 'aguardando' ? 'Aguardando' :
+            vehicle.status === 'scheduled' ? 'Na Programação' :
+            vehicle.status === 'unscheduled' ? 'Fora da Programação' :
+            vehicle.status === 'completed' ? 'Concluído' :
+            vehicle.status === 'cancelled' ? 'Cancelado' : 'Pendente';
 
-            const docPending = docRequested && !vehicle.docPhoto;
-            const vehPending = vehRequested && !vehicle.vehiclePhoto;
+        const docRequested = vehicle.documentPhotoRequested;
+        const vehRequested = vehicle.vehiclePhotoRequested;
 
-            const totalRequested = (docRequested ? 1 : 0) + (vehRequested ? 1 : 0);
-            const totalPending = (docPending ? 1 : 0) + (vehPending ? 1 : 0);
+        const docPending = docRequested && !vehicle.docPhoto;
+        const vehPending = vehRequested && !vehicle.vehiclePhoto;
 
-            const showSuccess = (!!vehicle.docPhoto || !vehicle.documentPhotoRequested) &&
-                    (!!vehicle.vehiclePhoto || !vehicle.vehiclePhotoRequested) &&
-                    (vehicle.docPhoto || vehicle.vehiclePhoto);
+        const totalPending = (docPending ? 1 : 0) + (vehPending ? 1 : 0);
 
-            const showPending = totalPending > 0;
+        const showSuccess = (!!vehicle.docPhoto || !vehicle.documentPhotoRequested) &&
+            (!!vehicle.vehiclePhoto || !vehicle.vehiclePhotoRequested) &&
+            (vehicle.docPhoto || vehicle.vehiclePhoto);
 
-            row.innerHTML = `
-                <td>${vehicle.createdAt ? new Date(vehicle.createdAt.toDate()).toLocaleString() : ''}</td>
-                <td>${vehicle.plate}</td>
-                <td>${vehicle.trailerPlate || '-'}</td>
-                <td>${vehicle.driverName || '-'}</td>
-                <td>${vehicle.driverPhone || '-'}</td>
-                <td>${vehicle.container || '-'}</td>
-                <td>
-                    <span class="status-badge ${statusClass}">
-                        ${statusText}
-                    </span>
-                </td>
-                <td>${vehicle.observations || '-'}</td>
-                <td>
-                    <button onclick="openActionModal('${vehicle.id}')" class="btn-primary position-relative">
-                        <i class="fas fa-edit"></i>
-                        ${showSuccess
-                          ? '<span class="success-badge"><i class="fas fa-check"></i></span>'
-                          : (showPending
-                            ? `<span class="notification-badge total-badge">${totalPending}</span>`
-                            : '')
-                        }
-                    </button>
-                </td>
-            `;
+        const showPending = totalPending > 0;
 
-            tableBody.appendChild(row);
-        }
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${vehicle.createdAt ? new Date(vehicle.createdAt.toDate()).toLocaleString() : ''}</td>
+            <td>${vehicle.plate}</td>
+            <td>${vehicle.trailerPlate || '-'}</td>
+            <td>${vehicle.driverName || '-'}</td>
+            <td>${vehicle.driverPhone || '-'}</td>
+            <td>${vehicle.container || '-'}</td>
+            <td>
+                <span class="status-badge ${statusClass}">
+                    ${statusText}
+                </span>
+            </td>
+            <td>${vehicle.observations || '-'}</td>
+            <td>
+                <button onclick="openActionModal('${vehicle.id}')" class="btn-primary position-relative">
+                    <i class="fas fa-edit"></i>
+                    ${showSuccess
+                      ? '<span class="success-badge"><i class="fas fa-check"></i></span>'
+                      : (showPending
+                        ? `<span class="notification-badge total-badge">${totalPending}</span>`
+                        : '')
+                    }
+                </button>
+            </td>
+        `;
+        tableBody.appendChild(row);
     });
 }
 
@@ -528,4 +589,66 @@ function atualizarBadgesModal(vehicle) {
     docSuccess.classList.toggle('hidden', !vehicle.docPhoto);
     vehicleSuccess.classList.toggle('hidden', !vehicle.vehiclePhoto);
 }
+
+function exportTableToExcel(filename) {
+    const table = document.getElementById('vehiclesTable');
+    const worksheetData = [];
+
+    const rows = table.querySelectorAll('tr');
+    let ignoreIndex = -1;
+
+    for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+        const row = rows[rowIndex];
+        const cells = row.querySelectorAll('th, td');
+        const rowData = [];
+
+        // Detecta o índice da coluna "Ações" no cabeçalho
+        if (rowIndex === 0) {
+            cells.forEach((cell, i) => {
+                if (cell.innerText.trim().toLowerCase() === 'ações') {
+                    ignoreIndex = i;
+                }
+            });
+        }
+
+        cells.forEach((cell, i) => {
+            if (rowIndex === 0) {
+                // Cabeçalho: substitui "Data/Hora" por "Data" e "Hora"
+                if (cell.innerText.trim().toLowerCase() === 'data/hora') {
+                    rowData.push('Data');
+                    rowData.push('Hora');
+                } else if (i !== ignoreIndex) {
+                    rowData.push(cell.innerText);
+                }
+            } else {
+                // Dados
+                if (i === 0) {
+                    const parts = cell.innerText.split(',');
+                    if (parts.length === 2) {
+                        rowData.push(parts[0].trim()); // Data
+                        rowData.push(parts[1].trim()); // Hora
+                    } else {
+                        rowData.push(cell.innerText.trim());
+                        rowData.push('');
+                    }
+                } else if (i !== ignoreIndex) {
+                    rowData.push(cell.innerText);
+                }
+            }
+        });
+
+        worksheetData.push(rowData);
+    }
+
+    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Registros');
+
+    XLSX.writeFile(workbook, filename);
+}
+
+// Evento do botão
+document.getElementById('exportExcelBtn').addEventListener('click', () => {
+    exportTableToExcel('Registros_Portaria_Gate.xlsx');
+});
 

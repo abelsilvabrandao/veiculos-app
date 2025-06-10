@@ -1,4 +1,31 @@
 /* Estilos específicos para a página de registros da portaria */
+:root {
+    --primary-color: #10B981;
+    --secondary-color: #059669;
+    --bg-start: #F0FDF4;
+    --bg-end: #D1FAE5;
+    --glass-bg: rgba(255, 255, 255, 0.25);
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --danger-color: #D32F2F;
+    --danger-color-hover: #B71C1C;
+
+}
+
+.btn-primary {
+    padding: 12px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: var(--secondary-color);
+}
+
+/* Estilos específicos para a página de registros da portaria */
 
 .title-with-actions {
     display: flex;
@@ -123,6 +150,12 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Espaçamento entre os botões alterar e delete na tabela */
+#vehiclesTable .btn-primary {
+    margin-right: 12px; /* Espaço à direita do botão alterar */
+}
+
 
 /* Estilo para o botão de ações na tabela */
 #vehiclesTable button {
@@ -326,6 +359,51 @@
     z-index: 1;
 }
 
+#vehiclesTable tr:hover {
+    background-color: rgba(46, 125, 50, 0.08); /* verde translúcido */
+}
+
+#vehiclesTable th,
+#vehiclesTable td {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
 
 
+/* Botão delete em vermelho */
+.btn-danger {
+    padding: 12px;
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
 
+.btn-danger:hover {
+    background: var(--danger-color-hover);
+}
+
+/* Animação do botão delete igual ao botão alterar */
+.btn-danger {
+    transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-danger:hover {
+    background: var(--danger-color-hover); /* já existente */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.no-data-message {
+    text-align: center;
+    font-style: italic;
+    color: #666666;
+    padding: 20px 0;
+    font-size: 1.1em;
+}
+
+.no-data-message i {
+    margin-right: 8px;
+    color: #2E7D32; /* cor verde para o ícone */
+}
