@@ -52,7 +52,7 @@ export function initializeProfile() {
             title: 'Editar Nome',
             html: `
                 <div style="position: relative; display: inline-block; margin-bottom: 10px;">
-                    <img src="${data?.photoURL || 'img/avatar-inicial.png'}" alt="Foto de Perfil" 
+                    <img src="${data?.photoURL || '/veiculos-app/img/avatar-inicial.png'}" alt="Foto de Perfil" 
                         style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #fff; 
                                box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
                     <div style="position: absolute; bottom: 5px; right: 5px; width: 12px; height: 12px; 
@@ -132,7 +132,7 @@ export function initializeProfile() {
                         }
                     </style>
                     <div style="position: relative; display: inline-block; margin-bottom: 10px;">
-                        <img src="${data?.photoURL || 'img/avatar-inicial.png'}"
+                        <img src="${data?.photoURL || '/veiculos-app/img/avatar-inicial.png'}"
                             alt="Foto de Perfil"
                             style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #fff;
                                    box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 1;">
@@ -174,7 +174,7 @@ export function initializeProfile() {
                         }
                     </style>
                     <div style="position: relative; display: inline-block; margin-bottom: 10px;">
-                        <img src="${userData?.photoURL || 'img/avatar-inicial.png'}"
+                        <img src="${userData?.photoURL || '/veiculos-app/img/avatar-inicial.png'}"
                             alt="Foto de Perfil"
                             style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #fff;
                                    box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 1;">
