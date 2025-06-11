@@ -7,7 +7,7 @@ import { signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth
 let lastWeatherUpdate = 0;
 let weatherCache = null;
 
-// Ícones do tempo baseados no código WMO usando SVGs locais
+// Ícones do tempo baseados no código WMO usando SVGs locais (Lembrar se caso ajustar algo no github tem que colocar o caminho correto da pasta lá em /veiculos-app/veiculos-app/img/)
 const weatherIcons = {
     0: '/veiculos-app/img/bx-sun-bright.svg', // Céu limpo
     1: '/veiculos-app/img/bx-cloud-sun.svg', // Parcialmente nublado

@@ -246,7 +246,11 @@ window.deleteVehicle = async function(docId) {
         confirmButtonText: 'Sim, excluir',
         cancelButtonText: 'Cancelar',
         confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6'
+        cancelButtonColor: '#3085d6',
+        customClass: {
+            confirmButton: 'btn-danger',
+            cancelButton: 'btn-secondary'
+        }
     });
 
     if (result.isConfirmed) {
@@ -360,9 +364,12 @@ window.handlePhoto = async function(type) {
                 showCancelButton: true,
                 cancelButtonText: 'Fechar',
                 cancelButtonColor: '#6c757d',
-                width: '80%'
+                width: '80%',
+                customClass: {
+                    confirmButton: 'btn-primary',
+                    cancelButton: 'btn-secondary',
+                }
             });
-
             if (result.isConfirmed) {
                 // Usuário quer tirar uma nova foto
                 return await captureNewPhoto(type, vehicleRef, data, photoField);
@@ -378,7 +385,10 @@ window.handlePhoto = async function(type) {
             icon: 'error',
             title: 'Erro',
             text: 'Não foi possível manipular a foto.',
-            confirmButtonColor: '#2E7D32'
+            confirmButtonColor: '#2E7D32',
+            customClass: {
+                confirmButton: 'btn-primary'
+            }
         });
     }
 };
@@ -394,13 +404,14 @@ async function captureNewPhoto(type, vehicleRef, data, photoField) {
                         <img id="photoPreview" src="" alt="Preview">
                     </div>
                     <div class="upload-options">
-                        <input type="file" id="photoInput" accept="image/*" capture="environment" class="hidden">
-                        <button id="uploadBtn" class="swal2-confirm swal2-styled">
-                            <i class="fas fa-upload"></i> Escolher Arquivo
-                        </button>
-                        <button id="cameraBtn" class="swal2-confirm swal2-styled">
-                            <i class="fas fa-camera"></i> Usar Câmera
-                        </button>
+                        <input type="file" id="photoInput" accept="image/*" class="hidden">
+
+                        <button id="uploadBtn" class="btn-primary">
+                    <i class="fas fa-upload"></i> Escolher Arquivo
+                    </button>
+                    <button id="cameraBtn" class="btn-primary">
+                    <i class="fas fa-camera"></i> Usar Câmera
+                    </button>
                     </div>
                 </div>
             `,
@@ -410,7 +421,12 @@ async function captureNewPhoto(type, vehicleRef, data, photoField) {
             confirmButtonColor: '#2E7D32',
             cancelButtonText: 'Cancelar',
             cancelButtonColor: '#d33',
+            customClass: {
+        confirmButton: 'btn-primary',
+        cancelButton: 'btn-danger'
+    },
             allowOutsideClick: false,
+         
             preConfirm: () => {
                 const photoPreview = document.getElementById('photoPreview');
                 if (!photoPreview.src || photoPreview.src === '') {
@@ -466,8 +482,8 @@ async function captureNewPhoto(type, vehicleRef, data, photoField) {
 
                         // Botão para capturar foto
                         const captureBtn = document.createElement('button');
-                        captureBtn.className = 'swal2-confirm swal2-styled';
-                        captureBtn.innerHTML = '<i class="fas fa-camera"></i> Capturar';
+                        captureBtn.className = 'btn-primary swal2-confirm swal2-styled';
+                        captureBtn.innerHTML = '<i class="fas fa-camera"></i> Capturar'; 
                         previewContainer.appendChild(captureBtn);
 
                         // Desabilita o botão de confirmar enquanto estiver na câmera
@@ -558,7 +574,10 @@ async function captureNewPhoto(type, vehicleRef, data, photoField) {
             icon: 'success',
             title: 'Foto anexada com sucesso',
             text: `A foto ${type === 'doc' ? 'do documento' : 'do veículo'} foi anexada com sucesso.`,
-            confirmButtonColor: '#2E7D32'
+            confirmButtonColor: '#2E7D32',
+            customClass: {
+                confirmButton: 'btn-primary'
+            }
         });
 
     } catch (error) {
@@ -567,7 +586,10 @@ async function captureNewPhoto(type, vehicleRef, data, photoField) {
             icon: 'error',
             title: 'Erro',
             text: 'Não foi possível anexar a foto.',
-            confirmButtonColor: '#2E7D32'
+            confirmButtonColor: '#2E7D32',
+            customClass: {
+                confirmButton: 'btn-primary'
+            }
         });
     }
 };
@@ -622,7 +644,10 @@ statusElement.classList.add(data.status || 'aguardando');
             icon: 'error',
             title: 'Erro',
             text: 'Não foi possível carregar os dados do veículo.',
-            confirmButtonColor: '#2E7D32'
+            confirmButtonColor: '#2E7D32',
+            customClass: {
+                confirmButton: 'btn-primary'
+            }
         });
     }
 
@@ -657,7 +682,10 @@ window.handleCall = function() {
             icon: 'error',
             title: 'Telefone não disponível',
             text: 'Não há número de telefone cadastrado para este motorista.',
-            confirmButtonColor: '#2E7D32'
+            confirmButtonColor: '#2E7D32',
+            customClass: {
+                confirmButton: 'btn-primary'
+            }
         });
     }
 };
@@ -670,6 +698,36 @@ auth.onAuthStateChanged((user) => {
 });
 
 function exportTableToExcel(filename) {
+    const searchTerm = document.getElementById('searchInput').value.trim();
+    const status = document.getElementById('statusSelect').value;
+    const pending = document.getElementById('pendingSelect').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const startTime = document.getElementById('startTime').value;
+    const endTime = document.getElementById('endTime').value;
+
+    const isAnyFilterSelected = 
+        searchTerm !== '' ||
+        (status && status !== 'all') ||
+        (pending && pending !== 'all') ||
+        startDate !== '' ||
+        endDate !== '' ||
+        startTime !== '' ||
+        endTime !== '';
+
+    if (!isAnyFilterSelected) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Selecione ao menos um filtro',
+            text: 'Por favor, selecione ao menos um filtro antes de exportar os dados.',
+            confirmButtonColor: '#2E7D32',
+            customClass: {
+                confirmButton: 'btn-primary'
+            }
+        });
+        return; // interrompe a exportação
+    }
+
     const table = document.getElementById('vehiclesTable');
     const worksheetData = [];
 

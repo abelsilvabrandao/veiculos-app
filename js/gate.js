@@ -92,7 +92,6 @@ function loadVehicles() {
                     </button>
                 </td>
             `;
-
             tableBody.appendChild(row);
         });
 
@@ -135,6 +134,8 @@ window.deleteVehicle = async function(docId) {
         cancelButtonColor: '#3085d6',
         customClass: {
             container: 'swal-container',
+            confirmButton: 'btn-danger',
+            cancelButton: 'btn-secondary',
         },
         backdrop: false,
     });
@@ -385,8 +386,10 @@ window.handlePhoto = async function(type) {
         showCancelButton: true,
         confirmButtonText: 'Sim, excluir',
         cancelButtonText: 'Cancelar',
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6'
+        customClass: {
+            confirmButton: 'btn-danger',
+            cancelButton: 'btn-secondary',
+        },
     });
 
     if (result.isConfirmed) {
@@ -455,7 +458,12 @@ window.handlePhoto = async function(type) {
             showCancelButton: true,
             cancelButtonText: 'Download',
             cancelButtonColor: '#3085d6',
-            width: '80%'
+            width: '80%',
+            customClass: {
+                confirmButton: 'btn-secondary',
+                cancelButton: 'btn-primary',
+                denyButton: 'btn-danger',
+            }
         }).then((result) => {
             if (result.isDenied) {
                 deletePhoto();
@@ -473,12 +481,16 @@ window.handlePhoto = async function(type) {
         const result = await Swal.fire({
             icon: 'warning',
             title: 'Solicitação já enviada',
-            text: `Já existe uma solicitação pendente para foto ${type === 'doc' ? 'do documento' : 'do veículo'}. Deseja cancelar a solicitação?`,
+            text: `Já existe uma solicitação pendente. Deseja cancelar a solicitação?`,
             showCancelButton: true,
             confirmButtonText: 'Sim, cancelar',
             cancelButtonText: 'Não',
             confirmButtonColor: '#d33',
-            cancelButtonColor: '#2E7D32'
+            cancelButtonColor: '#2E7D32',
+            customClass: {
+                confirmButton: 'btn-danger',
+                cancelButton: 'btn-secondary',
+            }
         });
 
         if (result.isConfirmed) {
@@ -492,7 +504,10 @@ window.handlePhoto = async function(type) {
                     icon: 'success',
                     title: 'Solicitação cancelada',
                     text: `A solicitação de foto ${type === 'doc' ? 'do documento' : 'do veículo'} foi cancelada.`,
-                    confirmButtonColor: '#2E7D32'
+                    confirmButtonColor: '#2E7D32',
+                    customClass: {
+                        confirmButton: 'btn-primary',
+                    }
                 });
 
                 document.getElementById(`${type}Notification`).classList.add('hidden');
@@ -516,8 +531,10 @@ window.handlePhoto = async function(type) {
             showCancelButton: true,
             confirmButtonText: 'Sim, enviar',
             cancelButtonText: 'Não',
-            confirmButtonColor: '#2E7D32',
-            cancelButtonColor: '#d33'
+            customClass: {
+                confirmButton: 'btn-primary',
+                cancelButton: 'btn-secondary',
+            },
         });
 
         if (result.isConfirmed) {
@@ -538,7 +555,10 @@ window.handlePhoto = async function(type) {
                 icon: 'success',
                 title: 'Solicitação enviada',
                 text: `Solicitação de foto ${type === 'doc' ? 'do documento' : 'do veículo'} enviada com sucesso.`,
-                confirmButtonColor: '#2E7D32'
+                confirmButtonColor: '#2E7D32',
+                customClass: {
+                    confirmButton: 'btn-primary',
+                }
             });
         }
     } catch (error) {
@@ -599,6 +619,36 @@ function atualizarBadgesModal(vehicle) {
 }
 
 function exportTableToExcel(filename) {
+    const searchTerm = document.getElementById('searchInput').value.trim();
+    const status = document.getElementById('statusSelect').value;
+    const pending = document.getElementById('pendingSelect').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const startTime = document.getElementById('startTime').value;
+    const endTime = document.getElementById('endTime').value;
+
+    const isAnyFilterSelected = 
+        searchTerm !== '' ||
+        (status && status !== 'all') ||
+        (pending && pending !== 'all') ||
+        startDate !== '' ||
+        endDate !== '' ||
+        startTime !== '' ||
+        endTime !== '';
+
+    if (!isAnyFilterSelected) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Selecione ao menos um filtro',
+            text: 'Por favor, selecione ao menos um filtro antes de exportar os dados.',
+            confirmButtonColor: '#2E7D32',
+            customClass: {
+                confirmButton: 'btn-primary'
+            }
+        });
+        return; // interrompe a exportação
+    }
+
     const table = document.getElementById('vehiclesTable');
     const worksheetData = [];
 
@@ -610,7 +660,6 @@ function exportTableToExcel(filename) {
         const cells = row.querySelectorAll('th, td');
         const rowData = [];
 
-        // Detecta o índice da coluna "Ações" no cabeçalho
         if (rowIndex === 0) {
             cells.forEach((cell, i) => {
                 if (cell.innerText.trim().toLowerCase() === 'ações') {
@@ -621,7 +670,6 @@ function exportTableToExcel(filename) {
 
         cells.forEach((cell, i) => {
             if (rowIndex === 0) {
-                // Cabeçalho: substitui "Data/Hora" por "Data" e "Hora"
                 if (cell.innerText.trim().toLowerCase() === 'data/hora') {
                     rowData.push('Data');
                     rowData.push('Hora');
@@ -629,12 +677,11 @@ function exportTableToExcel(filename) {
                     rowData.push(cell.innerText);
                 }
             } else {
-                // Dados
                 if (i === 0) {
                     const parts = cell.innerText.split(',');
                     if (parts.length === 2) {
-                        rowData.push(parts[0].trim()); // Data
-                        rowData.push(parts[1].trim()); // Hora
+                        rowData.push(parts[0].trim());
+                        rowData.push(parts[1].trim());
                     } else {
                         rowData.push(cell.innerText.trim());
                         rowData.push('');
@@ -657,6 +704,5 @@ function exportTableToExcel(filename) {
 
 // Evento do botão
 document.getElementById('exportExcelBtn').addEventListener('click', () => {
-    exportTableToExcel('Registros_Portaria_Gate.xlsx');
+    exportTableToExcel('Registros_Gate.xlsx');
 });
-

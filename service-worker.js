@@ -21,6 +21,7 @@ const STATIC_ASSETS = [
   '/js/components/footer.js',
   '/js/components/profile-manager.js',
   '/veiculos-app/img/',
+  '/img/',
   'https://cdn.jsdelivr.net/npm/@lottiefiles/dotlottie-web/+esm'
 ];
 
