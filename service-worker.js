@@ -17,11 +17,12 @@ const STATIC_ASSETS = [
   '/js/main.js',
   '/js/auth.js',
   '/js/weather.js',
+  '/js/user-profile.js',
   '/js/components/header-profile.js',
   '/js/components/footer.js',
   '/js/components/profile-manager.js',
   '/veiculos-app/img/',
-  '/img/',
+  '/veiculos-app/img/icons/',
   'https://cdn.jsdelivr.net/npm/@lottiefiles/dotlottie-web/+esm'
 ];
 

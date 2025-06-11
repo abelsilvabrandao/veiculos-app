@@ -427,7 +427,7 @@ export class HeaderProfile extends HTMLElement {
         const titles = {
             '/gate.html': 'GATE',
             '/portaria.html': 'PORTARIA',
-            '/registros-portaria.html': 'REGISTROS PORTARIA'
+            '/registros-portaria.html': 'PORTARIA'
         };
         
         // Remove qualquer caminho base se existir
