@@ -19,7 +19,7 @@ const STATIC_ASSETS = [
   '/js/weather.js',
   '/js/components/header-profile.js',
   '/js/components/footer.js',
-  '/assets/icons/',
+  '/img/',
   'https://cdn.jsdelivr.net/npm/@lottiefiles/dotlottie-web/+esm'
 ];
 

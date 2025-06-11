@@ -4,30 +4,30 @@ let weatherCache = null;
 
 // Ícones do tempo baseados no código WMO usando SVGs locais
 const weatherIcons = {
-    0: '/assets/icons/bx-sun-bright.svg', // Céu limpo
-    1: '/assets/icons/bx-cloud-sun.svg', // Parcialmente nublado
-    2: '/assets/icons/bx-cloud-sun.svg', // Parcialmente nublado
-    3: '/assets/icons/bx-cloud-fog.svg', // Nublado
-    45: '/assets/icons/bx-cloud-fog.svg', // Neblina
-    48: '/assets/icons/bx-cloud-fog.svg', // Neblina com geada
-    51: '/assets/icons/bx-cloud-drizzle.svg', // Chuvisco leve
-    53: '/assets/icons/bx-cloud-drizzle.svg', // Chuvisco moderado
-    55: '/assets/icons/bx-cloud-rain.svg', // Chuvisco intenso
-    61: '/assets/icons/bx-cloud-rain.svg', // Chuva leve
-    63: '/assets/icons/bx-cloud-rain-wind.svg', // Chuva moderada
-    65: '/assets/icons/bx-cloud-rain-wind.svg', // Chuva forte
-    71: '/assets/icons/bx-cloud-snow.svg', // Neve leve
-    73: '/assets/icons/bx-cloud-snow.svg', // Neve moderada
-    75: '/assets/icons/bx-snowflake.svg', // Neve forte
-    77: '/assets/icons/bx-snowflake.svg', // Grãos de neve
-    80: '/assets/icons/bx-thunder.svg', // Chuva leve com trovoada
-    81: '/assets/icons/bx-thunder.svg', // Chuva moderada com trovoada
-    82: '/assets/icons/bx-thunder.svg', // Chuva forte com trovoada
-    85: '/assets/icons/bx-sun-snow.svg', // Neve leve com trovoada
-    86: '/assets/icons/bx-sun-snow.svg', // Neve forte com trovoada
-    95: '/assets/icons/bx-thunder.svg', // Trovoada
-    96: '/assets/icons/bx-thunder.svg', // Trovoada com granizo
-    99: '/assets/icons/bx-thunder.svg'  // Trovoada forte com granizo
+    0: '/img/bx-sun-bright.svg', // Céu limpo
+    1: '/img/bx-cloud-sun.svg', // Parcialmente nublado
+    2: '/img/bx-cloud-sun.svg', // Parcialmente nublado
+    3: '/img/bx-cloud-fog.svg', // Nublado
+    45: '/img/bx-cloud-fog.svg', // Neblina
+    48: '/img/bx-cloud-fog.svg', // Neblina com geada
+    51: '/img/bx-cloud-drizzle.svg', // Chuvisco leve
+    53: '/img/bx-cloud-drizzle.svg', // Chuvisco moderado
+    55: '/img/bx-cloud-rain.svg', // Chuvisco intenso
+    61: '/img/bx-cloud-rain.svg', // Chuva leve
+    63: '/img/bx-cloud-rain-wind.svg', // Chuva moderada
+    65: '/img/bx-cloud-rain-wind.svg', // Chuva forte
+    71: '/img/bx-cloud-snow.svg', // Neve leve
+    73: '/img/bx-cloud-snow.svg', // Neve moderada
+    75: '/img/bx-snowflake.svg', // Neve forte
+    77: '/img/bx-snowflake.svg', // Grãos de neve
+    80: '/img/bx-thunder.svg', // Chuva leve com trovoada
+    81: '/img/bx-thunder.svg', // Chuva moderada com trovoada
+    82: '/img/bx-thunder.svg', // Chuva forte com trovoada
+    85: '/img/bx-sun-snow.svg', // Neve leve com trovoada
+    86: '/img/bx-sun-snow.svg', // Neve forte com trovoada
+    95: '/img/bx-thunder.svg', // Trovoada
+    96: '/img/bx-thunder.svg', // Trovoada com granizo
+    99: '/img/bx-thunder.svg'  // Trovoada forte com granizo
 };
 
 // Função para formatar a data
@@ -236,7 +236,7 @@ async function updateWeatherUI() {
 
         if (windSpeedElement) {
             // Carregar o SVG do vento
-            fetch('/assets/icons/bx-wind.svg')
+            fetch('/img/bx-wind.svg')
                 .then(response => response.text())
                 .then(svgContent => {
                     const windContainer = document.createElement('div');
