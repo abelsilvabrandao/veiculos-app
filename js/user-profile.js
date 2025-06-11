@@ -1,6 +1,6 @@
 import { auth, db } from './main.js';
 import { doc, getDoc, setDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-import { updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { updateProfile, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
 // Aguarda autenticação antes de inicializar
 auth.onAuthStateChanged(user => {
@@ -262,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Cropper Modal
+// Cropper Modal
     function openCropperModal(imageUrl) {
         const modal = document.getElementById('cropperModal');
         const cropperImage = document.getElementById('cropperImage');
@@ -271,7 +271,19 @@ document.addEventListener('DOMContentLoaded', () => {
         cropper = new Cropper(cropperImage, {
             aspectRatio: 1,
             viewMode: 1,
-            autoCropArea: 0.8
+            autoCropArea: 0.8,
+            dragMode: 'move',
+            guides: true,
+            center: true,
+            highlight: false,
+            cropBoxMovable: true,
+            cropBoxResizable: true,
+            toggleDragModeOnDblclick: false,
+            cropBoxShape: 'circle', // Força o recorte em formato circular
+            background: false, // Remove o fundo xadrez
+            viewMode: 2, // Força a visualização dentro do container
+            minContainerWidth: 300,
+            minContainerHeight: 300
         });
 
         document.getElementById('saveCrop').onclick = async () => {

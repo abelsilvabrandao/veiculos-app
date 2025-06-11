@@ -4,6 +4,38 @@ import { signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile 
 import { auth, db } from './main.js';
 import { doc, getDoc, updateDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
+// Função para alternar a visibilidade da senha
+window.togglePasswordVisibility = function() {
+    const passwordInput = document.getElementById('password');
+    const toggleIcon = document.querySelector('.toggle-password');
+    
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.classList.remove('fa-eye-slash');
+        toggleIcon.classList.add('fa-eye');
+    } else {
+        passwordInput.type = 'password';
+        toggleIcon.classList.remove('fa-eye');
+        toggleIcon.classList.add('fa-eye-slash');
+    }
+};
+
+// Função para verificar autenticação
+export function checkAuth() {
+    return new Promise((resolve) => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            unsubscribe(); // Parar de escutar mudanças após primeira verificação
+            
+            if (!user) {
+                window.location.href = '/index.html';
+                resolve(false);
+            } else {
+                resolve(true);
+            }
+        });
+    });
+}
+
 function getDOMElements() {
     return {
         loginForm: document.getElementById('loginFormElement'),
@@ -39,11 +71,9 @@ async function updateUserInfo(user) {
                 lastLogin: new Date().toISOString()
             };
             await setDoc(userDocRef, userData);
-            console.log('Documento do usuário criado com sucesso');
         } else {
             userData = userDoc.data();
             await updateDoc(userDocRef, { lastLogin: new Date().toISOString() });
-            console.log('Last login atualizado com sucesso');
         }
 
         if (elements.userName) elements.userName.textContent = userData.displayName;
@@ -64,7 +94,6 @@ function setupLoginForm(elements) {
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
-            console.log('Login bem sucedido:', user.email);
             elements.loginForm.reset();
         } catch (error) {
             console.error('Erro no login:', error);
@@ -106,7 +135,6 @@ function setupUserNameForm(elements) {
 
                 await updateProfile(user, { displayName });
 
-                console.log('Nome atualizado com sucesso');
                 if (elements.nameForm) elements.nameForm.classList.add('hidden');
                 if (elements.accessMenu) elements.accessMenu.classList.remove('hidden');
                 updateUserInfo(user);
@@ -121,11 +149,16 @@ function setupUserNameForm(elements) {
 }
 
 function setupAuthStateListener() {
-    onAuthStateChanged(auth, async (user) => {
-        const elements = getDOMElements();
+    // Esconder todos os containers inicialmente
+    const elements = getDOMElements();
+    if (elements.mainContent) elements.mainContent.classList.add('hidden');
+    if (elements.loginFormContainer) elements.loginFormContainer.style.display = 'none';
+    if (elements.nameForm) elements.nameForm.classList.add('hidden');
+    if (elements.accessMenu) elements.accessMenu.classList.add('hidden');
 
+    onAuthStateChanged(auth, async (user) => {
         if (user) {
-            console.log('Usuário autenticado:', user.email);
+            // Usuário autenticado
             if (elements.loginFormContainer) elements.loginFormContainer.style.display = 'none';
             if (elements.mainContent) elements.mainContent.classList.remove('hidden');
 
@@ -136,16 +169,16 @@ function setupAuthStateListener() {
             const userData = updatedDoc.data();
 
             if (userData.displayName && userData.displayName !== user.email) {
-                console.log('Usuário já tem nome definido:', userData.displayName);
+                // Usuário já tem nome definido
                 if (elements.nameForm) elements.nameForm.classList.add('hidden');
                 if (elements.accessMenu) elements.accessMenu.classList.remove('hidden');
             } else {
-                console.log('Usuário precisa definir nome');
+                // Usuário precisa definir o nome
                 if (elements.nameForm) elements.nameForm.classList.remove('hidden');
                 if (elements.accessMenu) elements.accessMenu.classList.add('hidden');
             }
         } else {
-            console.log('Nenhum usuário autenticado');
+            // Usuário não autenticado
             if (elements.loginFormContainer) elements.loginFormContainer.style.display = 'block';
             if (elements.mainContent) elements.mainContent.classList.add('hidden');
             if (elements.nameForm) elements.nameForm.classList.add('hidden');
@@ -154,9 +187,17 @@ function setupAuthStateListener() {
     });
 }
 
+// Adiciona classe para controlar a visibilidade inicial
+document.documentElement.classList.add('loading');
+
 document.addEventListener('DOMContentLoaded', () => {
     const elements = getDOMElements();
     if (elements.loginForm) setupLoginForm(elements);
     if (elements.userNameForm) setupUserNameForm(elements);
     setupAuthStateListener();
+    
+    // Remove a classe de loading após a verificação inicial
+    setTimeout(() => {
+        document.documentElement.classList.remove('loading');
+    }, 100);
 });

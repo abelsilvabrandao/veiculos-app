@@ -29,7 +29,8 @@ function openCropperModal(imageUrl) {
         highlight: false,
         cropBoxMovable: true,
         cropBoxResizable: true,
-        toggleDragModeOnDblclick: false
+        toggleDragModeOnDblclick: false,
+        cropBoxShape: 'circle' // Força o recorte em formato circular
     });
 }
 

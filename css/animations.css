@@ -1,0 +1,31 @@
+/* Animações para ícones do clima */
+@keyframes weather-rain {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(2px); }
+    100% { transform: translateY(0); }
+}
+
+@keyframes weather-thunder {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    51% { opacity: 1; }
+    100% { opacity: 1; }
+}
+
+@keyframes weather-sun {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Classes de animação */
+.weather-rain {
+    animation: weather-rain 1s ease-in-out infinite;
+}
+
+.weather-thunder {
+    animation: weather-thunder 2s ease-in-out infinite;
+}
+
+.weather-sun {
+    animation: weather-sun 8s linear infinite;
+}

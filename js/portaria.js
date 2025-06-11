@@ -1,8 +1,11 @@
-import { collection, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { collection, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot, doc, getDoc, getFirestore } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-import { app } from './main.js';
+import { app, db } from './main.js';
+import { checkAuth } from './auth.js';
 
-const db = getFirestore(app);
+// Verificar autenticação antes de qualquer coisa
+checkAuth();
+
 const auth = getAuth(app);
 
 // Validação de placa
@@ -306,7 +309,6 @@ function loadRecentEntries() {
                     <div class="entry-header">
                         <strong class="plate-number">${data.plate}</strong>
                         ${data.trailerPlate ? `<span class="trailer-plate">/ ${data.trailerPlate}</span>` : ''}
-                        ${pendingCount > 0 ? `<span class="notification-count">${pendingCount}</span>` : ''}
                     </div>
                     <div class="entry-details">
                         <span class="driver-name">${data.driverName || 'Motorista não informado'}</span>
@@ -316,6 +318,7 @@ function loadRecentEntries() {
                     </div>
                 </div>
                 <div class="entry-status">
+                    ${pendingCount > 0 ? `<span class="notification-count">${pendingCount}</span>` : ''}
                     <span class="status-badge ${(data.status || 'pending').toLowerCase()}">
                         ${getStatusText(data.status || 'pending')}
                     </span>

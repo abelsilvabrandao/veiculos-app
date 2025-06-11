@@ -1,61 +1,33 @@
-import { DotLottie } from 'https://cdn.jsdelivr.net/npm/@lottiefiles/dotlottie-web/+esm';
-
 // Cache para evitar chamadas desnecessárias
 let lastWeatherUpdate = 0;
 let weatherCache = null;
-let weatherAnimation = null;
-let windAnimation = null;
 
-// Animações Lottie para diferentes condições climáticas
-const weatherAnimations = {
-    0: 'https://lottie.host/8df8da0d-2513-4349-83d6-53316ed956c1/KhaS3kBDSw.lottie', // Céu limpo
-    1: 'https://lottie.host/7ce1b784-6726-46c8-b933-41f264ebaa96/NbwoL0xCub.lottie', // Parcialmente nublado
-    2: 'https://lottie.host/7ce1b784-6726-46c8-b933-41f264ebaa96/NbwoL0xCub.lottie', // Parcialmente nublado
-    3: 'https://lottie.host/c125e872-720b-4f10-bd22-ed14ea017b79/HImACbvYeB.lottie', // Nublado
-    45: 'https://lottie.host/31e7000d-7de2-4755-b64d-aad51e0e6837/FEVEPdQqP3.lottie', // Neblina
-    48: 'https://lottie.host/31e7000d-7de2-4755-b64d-aad51e0e6837/FEVEPdQqP3.lottie', // Neblina com geada
-    51: 'https://lottie.host/2c64ac6f-53e0-493b-99c4-a9ab31f92ecd/OxeLQJWlYo.lottie', // Chuvisco leve
-    53: 'https://lottie.host/2c64ac6f-53e0-493b-99c4-a9ab31f92ecd/OxeLQJWlYo.lottie', // Chuvisco moderado
-    55: 'https://lottie.host/2c64ac6f-53e0-493b-99c4-a9ab31f92ecd/OxeLQJWlYo.lottie', // Chuvisco intenso
-    61: 'https://lottie.host/2c64ac6f-53e0-493b-99c4-a9ab31f92ecd/OxeLQJWlYo.lottie', // Chuva leve
-    65: 'https://lottie.host/2c64ac6f-53e0-493b-99c4-a9ab31f92ecd/OxeLQJWlYo.lottie', // Chuva forte
-    80: 'https://lottie.host/embed/3584a041-60dc-466a-98ad-8c249e7078da/Vvuh1r69Ht.lottie',// Chuva leve com trovoada
-    81: 'https://lottie.host/embed/3584a041-60dc-466a-98ad-8c249e7078da/Vvuh1r69Ht.lottie', // Chuva moderada com trovoada
-    82: 'https://lottie.host/embed/3584a041-60dc-466a-98ad-8c249e7078da/Vvuh1r69Ht.lottie', // Chuva forte com trovoada
-    95: 'https://lottie.host/embed/f3d78749-1358-43c6-84bc-0af905270748/hjGbm6X2it.lottie', // Trovoada
-    96: 'https://lottie.host/embed/f3d78749-1358-43c6-84bc-0af905270748/hjGbm6X2it.lottie', // Trovoada com granizo
-    99: 'https://lottie.host/embed/f3d78749-1358-43c6-84bc-0af905270748/hjGbm6X2it.lottie' // Trovoada forte com granizo
-};
-
-// URL da animação do vento
-const windAnimationUrl = 'https://lottie.host/4214a949-0977-48aa-b2ce-15d3bef7b54b/ysO0Q4u1fW.lottie';
-
-// Ícones do tempo baseados no código WMO usando Font Awesome
+// Ícones do tempo baseados no código WMO usando SVGs locais
 const weatherIcons = {
-    0: '<i class="fas fa-sun text-warning"></i>', // Céu limpo -OK
-    1: '<i class="fas fa-cloud-sun text-info"></i>', // Parcialmente nublado -OK
-    2: '<i class="fas fa-cloud-sun text-info"></i>', // Parcialmente nublado -OK
-    3: '<i class="fas fa-cloud text-secondary"></i>', // Nublado -OK
-    45: '<i class="fas fa-smog text-secondary"></i>', // Neblina -OK
-    48: '<i class="fas fa-smog text-secondary"></i>', // Neblina com geada -OK
-    51: '<i class="fas fa-cloud-rain text-info"></i>', // Chuvisco leve -OK
-    53: '<i class="fas fa-cloud-rain text-info"></i>', // Chuvisco moderado -OK
-    55: '<i class="fas fa-cloud-showers-heavy text-info"></i>', // Chuvisco intenso -OK
-    61: '<i class="fas fa-cloud-rain text-primary"></i>', // Chuva leve -OK
-    63: '<i class="fas fa-cloud-showers-heavy text-primary"></i>', // Chuva moderada -OK
-    65: '<i class="fas fa-cloud-showers-heavy text-primary"></i>', // Chuva forte -OK
-    71: '<i class="fas fa-snowflake text-info"></i>', // Neve leve // N
-    73: '<i class="fas fa-snowflake text-info"></i>', // Neve moderada // N
-    75: '<i class="fas fa-snowflake text-info"></i>', // Neve forte // N
-    77: '<i class="fas fa-snowflake text-info"></i>', // Grãos de neve // N
-    80: '<i class="fas fa-bolt text-warning"></i>', // Chuva leve com trovoada - OK
-    81: '<i class="fas fa-bolt text-warning"></i>', // Chuva moderada com trovoada - OK
-    82: '<i class="fas fa-poo-storm text-warning"></i>', // Chuva forte com trovoada - OK
-    85: '<i class="fas fa-bolt text-warning"></i>', // Neve leve com trovoada // N
-    86: '<i class="fas fa-poo-storm text-warning"></i>', // Neve forte com trovoada // N
-    95: '<i class="fas fa-bolt text-warning"></i>', // Trovoada - OK
-    96: '<i class="fas fa-poo-storm text-warning"></i>', // Trovoada com granizo - OK
-    99: '<i class="fas fa-poo-storm text-warning"></i>'  // Trovoada forte com granizo - OK
+    0: '/assets/icons/bx-sun-bright.svg', // Céu limpo
+    1: '/assets/icons/bx-cloud-sun.svg', // Parcialmente nublado
+    2: '/assets/icons/bx-cloud-sun.svg', // Parcialmente nublado
+    3: '/assets/icons/bx-cloud-fog.svg', // Nublado
+    45: '/assets/icons/bx-cloud-fog.svg', // Neblina
+    48: '/assets/icons/bx-cloud-fog.svg', // Neblina com geada
+    51: '/assets/icons/bx-cloud-drizzle.svg', // Chuvisco leve
+    53: '/assets/icons/bx-cloud-drizzle.svg', // Chuvisco moderado
+    55: '/assets/icons/bx-cloud-rain.svg', // Chuvisco intenso
+    61: '/assets/icons/bx-cloud-rain.svg', // Chuva leve
+    63: '/assets/icons/bx-cloud-rain-wind.svg', // Chuva moderada
+    65: '/assets/icons/bx-cloud-rain-wind.svg', // Chuva forte
+    71: '/assets/icons/bx-cloud-snow.svg', // Neve leve
+    73: '/assets/icons/bx-cloud-snow.svg', // Neve moderada
+    75: '/assets/icons/bx-snowflake.svg', // Neve forte
+    77: '/assets/icons/bx-snowflake.svg', // Grãos de neve
+    80: '/assets/icons/bx-thunder.svg', // Chuva leve com trovoada
+    81: '/assets/icons/bx-thunder.svg', // Chuva moderada com trovoada
+    82: '/assets/icons/bx-thunder.svg', // Chuva forte com trovoada
+    85: '/assets/icons/bx-sun-snow.svg', // Neve leve com trovoada
+    86: '/assets/icons/bx-sun-snow.svg', // Neve forte com trovoada
+    95: '/assets/icons/bx-thunder.svg', // Trovoada
+    96: '/assets/icons/bx-thunder.svg', // Trovoada com granizo
+    99: '/assets/icons/bx-thunder.svg'  // Trovoada forte com granizo
 };
 
 // Função para formatar a data
@@ -208,100 +180,91 @@ async function updateWeatherUI() {
 
         // Atualizar nome da cidade
         if (cityNameElement && data.city) {
-            cityNameElement.textContent = data.city;
+            cityNameElement.innerHTML = `<i class="fas fa-location-dot text-secondary color: #666666;"></i> ${data.city}`;
         }
 
-        // Atualizar temperatura e ícone/animação
-        if (tempElement && animationCanvas) {
-            // Verificar se existe animação para o código do tempo atual
-            if (weatherAnimations[weatherCode]) {
-                tempElement.innerHTML = `${temperature}°C`;
-                animationCanvas.style.display = 'block';
-                
-                // Destruir animação anterior se existir
-                if (weatherAnimation) {
-                    weatherAnimation.destroy();
-                    weatherAnimation = null;
-                }
-
-                // Criar nova animação
+        // Atualizar temperatura e ícone
+        if (tempElement) {
+            const iconPath = weatherIcons[weatherCode];
+            if (iconPath) {
+                // Carregar o SVG
                 try {
-                    weatherAnimation = new DotLottie({
-                        autoplay: true,
-                        loop: true,
-                        canvas: animationCanvas,
-                        src: weatherAnimations[weatherCode]
-                    });
-                } catch (error) {
-                    console.error('Erro ao criar animação do clima:', error);
-                    // Tenta recriar o canvas
-                    const newCanvas = document.createElement('canvas');
-                    newCanvas.style.width = '40px';
-                    newCanvas.style.height = '40px';
-                    animationCanvas.parentNode.replaceChild(newCanvas, animationCanvas);
+                    const response = await fetch(iconPath);
+                    const svgContent = await response.text();
                     
-                    // Tenta criar a animação novamente
-                    try {
-                        weatherAnimation = new DotLottie({
-                            autoplay: true,
-                            loop: true,
-                            canvas: newCanvas,
-                            src: weatherAnimations[weatherCode]
-                        });
-                    } catch (e) {
-                        console.error('Falha na segunda tentativa de criar animação do clima:', e);
-                        // Se falhar, mostra apenas o ícone
-                        tempElement.innerHTML = `${temperature}°C ${icon}`;
-                        newCanvas.style.display = 'none';
+                    // Criar container para o ícone
+                    const iconContainer = document.createElement('div');
+                    iconContainer.style.display = 'inline-block';
+                    iconContainer.style.width = '24px';
+                    iconContainer.style.height = '24px';
+                    iconContainer.style.verticalAlign = 'middle';
+                    iconContainer.style.marginLeft = '8px';
+                    iconContainer.innerHTML = svgContent;
+                    
+                    // Ajustar cor e animação do SVG
+                    const svgElement = iconContainer.querySelector('svg');
+                    if (svgElement) {
+                        svgElement.style.fill = '#2E7D32';
+                        svgElement.style.width = '100%';
+                        svgElement.style.height = '100%';
+                        
+                        // Adicionar classe de animação baseada no clima
+                        if (weatherCode >= 51 && weatherCode <= 65) {
+                            svgElement.classList.add('weather-rain');
+                        } else if (weatherCode >= 80 && weatherCode <= 99) {
+                            svgElement.classList.add('weather-thunder');
+                        } else if (weatherCode === 0) {
+                            svgElement.classList.add('weather-sun');
+                        }
                     }
+                    
+                    tempElement.innerHTML = `${temperature}°C`;
+                    tempElement.appendChild(iconContainer);
+                } catch (error) {
+                    console.error('Erro ao carregar SVG:', error);
+                    tempElement.innerHTML = `${temperature}°C`;
                 }
             } else {
-                // Para climas sem animação, mostrar ícone Font Awesome
-                tempElement.innerHTML = `${temperature}°C ${icon}`;
-                animationCanvas.style.display = 'none';
+                tempElement.innerHTML = `${temperature}°C`;
             }
         }
 
-        // Limpar descrição do tempo (agora está junto com a temperatura)
+        // Limpar descrição do tempo
         if (weatherDescription) {
             weatherDescription.innerHTML = '';
         }
 
-        if (windSpeedElement && windCanvas) {
-            windSpeedElement.textContent = `${windSpeed} km/h`;
-
-            // Destruir animação anterior do vento se existir
-            if (windAnimation) {
-                windAnimation.destroy();
-            }
-            // Criar nova animação do vento
-            try {
-                windAnimation = new DotLottie({
-                    canvas: windCanvas,
-                    autoplay: true,
-                    loop: true,
-                    src: windAnimationUrl
+        if (windSpeedElement) {
+            // Carregar o SVG do vento
+            fetch('/assets/icons/bx-wind.svg')
+                .then(response => response.text())
+                .then(svgContent => {
+                    const windContainer = document.createElement('div');
+                    windContainer.style.display = 'flex';
+                    windContainer.style.alignItems = 'center';
+                    windContainer.style.gap = '8px';
+                    
+                    const iconContainer = document.createElement('div');
+                    iconContainer.style.width = '24px';
+                    iconContainer.style.height = '24px';
+                    iconContainer.innerHTML = svgContent;
+                    
+                    const svgElement = iconContainer.querySelector('svg');
+                    if (svgElement) {
+                        svgElement.style.fill = '#666666';
+                        svgElement.style.width = '100%';
+                        svgElement.style.height = '100%';
+                    }
+                    
+                    windContainer.appendChild(iconContainer);
+                    windContainer.insertAdjacentHTML('beforeend', `${windSpeed} km/h`);
+                    windSpeedElement.innerHTML = '';
+                    windSpeedElement.appendChild(windContainer);
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar SVG do vento:', error);
+                    windSpeedElement.textContent = `${windSpeed} km/h`;
                 });
-            } catch (error) {
-                console.error('Erro ao criar animação do vento:', error);
-                // Tenta recriar o canvas
-                const newCanvas = document.createElement('canvas');
-                newCanvas.style.width = '40px';
-                newCanvas.style.height = '40px';
-                windCanvas.parentNode.replaceChild(newCanvas, windCanvas);
-                
-                // Tenta criar a animação novamente
-                try {
-                    windAnimation = new DotLottie({
-                        canvas: newCanvas,
-                        autoplay: true,
-                        loop: true,
-                        src: windAnimationUrl
-                    });
-                } catch (e) {
-                    console.error('Falha na segunda tentativa de criar animação do vento:', e);
-                }
-            }
         }
 
     } catch (error) {
@@ -328,12 +291,24 @@ async function updateWeatherUI() {
     }
 }
 
-// Atualizar a cada 30 minutos
+// Função para atualizar o relógio
+function updateDateTime() {
+    const dateTimeElement = document.getElementById('currentDateTime');
+    if (dateTimeElement) {
+        dateTimeElement.textContent = formatDate();
+    }
+}
+
+// Atualizar o relógio a cada segundo
+setInterval(updateDateTime, 1000);
+
+// Atualizar o clima a cada 30 minutos
 setInterval(updateWeatherUI, 30 * 60 * 1000);
 
 // Primeira atualização
 document.addEventListener('DOMContentLoaded', () => {
-    // Pequeno delay para garantir que todos os elementos estejam carregados
+    // Atualizar relógio e clima imediatamente
+    updateDateTime();
     setTimeout(updateWeatherUI, 500);
 });
 

@@ -24,14 +24,11 @@
 }
 
 .notification-count {
-    position: absolute;
-    top: -8px;
-    right: -8px;
     background-color: #db2d06;
     color: #fdfcfc;
     border-radius: 50%;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -96,6 +93,11 @@
 
 .entry-status {
     margin-left: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    position: relative;
 }
 
 .status-badge {

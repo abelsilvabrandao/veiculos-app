@@ -38,6 +38,13 @@
     max-width: 400px;
     margin: 100px auto;
     padding: 30px;
+    text-align: center;
+}
+
+.login-container h2 {
+    color: #666666;
+    margin-bottom: 30px;
+    font-size: 1.8em;
 }
 
 .form-group {
@@ -53,6 +60,28 @@
     color: #333;
 }
 
+.password-group {
+    position: relative;
+}
+
+.password-group input {
+    padding-right: 40px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666;
+    transition: color 0.3s ease;
+}
+
+.toggle-password:hover {
+    color: #333;
+}
+
 .btn-primary {
     padding: 12px;
     background: var(--primary-color);
@@ -61,6 +90,13 @@
     border-radius: 8px;
     cursor: pointer;
     transition: background 0.3s ease;
+}
+
+.btn-login {
+    padding: 12px 30px;
+    min-width: 200px;
+    margin: 0 auto;
+    display: block;
 }
 
 .btn-primary:hover {
@@ -198,6 +234,27 @@
     align-items: center;
 }
 
+.access-menu {
+    padding: 30px;
+    margin-top: 30px;
+    text-align: left;
+}
+
+.welcome-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-left: 20px;
+}
+
+.welcome-header h2 {
+    color: #666666;
+    margin: 0;
+    font-size: 1.8em;
+    font-weight: 600;
+}
+
 .form-actions .btn-primary,
 .form-actions .btn-secondary {
     min-width: 120px;
@@ -208,6 +265,14 @@
 }
 
 .hidden {
+    display: none !important;
+}
+
+/* Controle de visibilidade inicial */
+html.loading #loginForm,
+html.loading #mainContent,
+html.loading #nameForm,
+html.loading #accessMenu {
     display: none !important;
 }
 
@@ -240,9 +305,9 @@
     right: 0;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
     justify-content: center;
     align-items: center;
+    z-index: 9999; /* Garante que o modal fique na frente */
 }
 
 .modal-content {
@@ -253,6 +318,8 @@
     max-height: 90vh;
     display: flex;
     flex-direction: column;
+    position: relative;
+    z-index: 10000; /* Garante que o conteúdo fique na frente do overlay */
 }
 
 .modal-header {

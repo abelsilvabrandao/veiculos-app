@@ -1,13 +1,162 @@
-import { collection, query, orderBy, onSnapshot, doc, updateDoc, serverTimestamp, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, serverTimestamp, getDoc, getFirestore, where } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { app } from './main.js';
+import { checkAuth } from './auth.js';
 
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+// Verificar autenticação antes de qualquer coisa
+checkAuth();
+
+// Cleanup ao fechar a página
+window.addEventListener('beforeunload', () => {
+    stopCamera();
+});
+
 let currentVehicleId = null;
 let currentVehicles = [];
 let selectedVehicle = null;
+
+let mediaStream = null;
+let videoElement = null;
+
+// Função para parar a câmera
+function stopCamera() {
+    if (mediaStream) {
+        mediaStream.getTracks().forEach(track => {
+            track.stop();
+        });
+        mediaStream = null;
+    }
+}
+
+// Função para lidar com fotos
+window.handlePhoto = async function(type) {
+    const vehicle = currentVehicles.find(v => v.id === currentVehicleId);
+    if (!vehicle) return;
+
+    const photoField = type === 'doc' ? 'docPhoto' : 'vehiclePhoto';
+    const requestField = type === 'doc' ? 'documentPhotoRequested' : 'vehiclePhotoRequested';
+
+    // Se já existe uma foto
+    if (vehicle[photoField]) {
+        const result = await Swal.fire({
+            title: 'Foto existente',
+            imageUrl: vehicle[photoField],
+            imageWidth: 400,
+            imageHeight: 300,
+            showDenyButton: true,
+            denyButtonText: 'Excluir',
+            denyButtonColor: '#d33',
+            showCancelButton: true,
+            cancelButtonText: 'Download',
+            cancelButtonColor: '#3085d6',
+            width: '80%'
+        });
+
+        if (result.isDenied) {
+            // Excluir foto
+            try {
+                await updateDoc(doc(db, 'veiculos', currentVehicleId), {
+                    [photoField]: null,
+                    [requestField]: false
+                });
+                Swal.fire('Foto excluída com sucesso!', '', 'success');
+            } catch (error) {
+                console.error('Erro ao excluir foto:', error);
+                Swal.fire('Erro ao excluir foto', '', 'error');
+            }
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            // Download
+            const a = document.createElement('a');
+            a.href = vehicle[photoField];
+            a.download = `${vehicle.plate}_${type === 'doc' ? 'documento' : 'veiculo'}.jpg`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+        return;
+    }
+
+    // Se já existe uma solicitação pendente
+    if (vehicle[requestField]) {
+        const result = await Swal.fire({
+            icon: 'warning',
+            title: 'Solicitação já enviada',
+            text: `Já existe uma solicitação pendente para foto ${type === 'doc' ? 'do documento' : 'do veículo'}. Deseja cancelar a solicitação?`,
+            showCancelButton: true,
+            confirmButtonText: 'Sim, cancelar',
+            cancelButtonText: 'Não',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#2E7D32'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await updateDoc(doc(db, 'veiculos', currentVehicleId), {
+                    [requestField]: false
+                });
+                Swal.fire('Solicitação cancelada!', '', 'success');
+            } catch (error) {
+                console.error('Erro ao cancelar solicitação:', error);
+                Swal.fire('Erro ao cancelar solicitação', '', 'error');
+            }
+        }
+        return;
+    }
+
+    // Iniciar captura de foto
+    try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        videoElement = document.createElement('video');
+        videoElement.srcObject = mediaStream;
+        videoElement.autoplay = true;
+
+        const result = await Swal.fire({
+            backdrop: 'static',
+            allowOutsideClick: false,
+            showCloseButton: false,
+            title: 'Capturar foto',
+            html: videoElement,
+            showCancelButton: true,
+            confirmButtonText: 'Capturar',
+            cancelButtonText: 'Cancelar',
+            didOpen: () => {
+                Swal.getConfirmButton().focus();
+            },
+            willClose: () => {
+                stopCamera();
+            }
+        });
+
+        if (result.isConfirmed) {
+            const canvas = document.createElement('canvas');
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+            canvas.getContext('2d').drawImage(videoElement, 0, 0);
+            
+            stopCamera();
+
+            const photoData = canvas.toDataURL('image/jpeg');
+            try {
+                await updateDoc(doc(db, 'veiculos', currentVehicleId), {
+                    [photoField]: photoData,
+                    [requestField]: false
+                });
+                Swal.fire('Foto salva com sucesso!', '', 'success');
+            } catch (error) {
+                console.error('Erro ao salvar foto:', error);
+                Swal.fire('Erro ao salvar foto', '', 'error');
+            }
+        }
+    } catch (error) {
+        console.error('Erro ao acessar câmera:', error);
+        Swal.fire('Erro ao acessar câmera', 'Verifique se a câmera está disponível e se você concedeu permissão.', 'error');
+    } finally {
+        stopCamera();
+    }
+}
 
 // Carregar registros
 function loadVehicles(dateFilter = '') {
@@ -492,11 +641,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('searchInput').addEventListener('input', (e) => {
         const searchTerm = e.target.value.toLowerCase();
         filterVehicles(searchTerm);
-    });
-
-    // Filtro de data
-    document.getElementById('dateFilter').addEventListener('change', (e) => {
-        loadVehicles(e.target.value);
     });
 
     // Carregar registros iniciais

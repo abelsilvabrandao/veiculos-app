@@ -1,8 +1,11 @@
-import { getFirestore, collection, query, orderBy, deleteDoc, onSnapshot, doc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, serverTimestamp, getDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-import { app } from './main.js';
+import { app, db } from './main.js';
+import { checkAuth } from './auth.js';
 
-const db = getFirestore(app);
+// Verificar autenticação antes de qualquer coisa
+checkAuth();
+
 const auth = getAuth(app);
 
 let currentVehicles = [];
@@ -120,6 +123,8 @@ function loadVehicles() {
 
 window.deleteVehicle = async function(docId) {
     const result = await Swal.fire({
+        backdrop: true,
+        allowOutsideClick: false,
         title: 'Confirmar exclusão',
         text: 'Tem certeza que deseja excluir este registro?',
         icon: 'warning',
@@ -127,7 +132,11 @@ window.deleteVehicle = async function(docId) {
         confirmButtonText: 'Sim, excluir',
         cancelButtonText: 'Cancelar',
         confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6'
+        cancelButtonColor: '#3085d6',
+        customClass: {
+            container: 'swal-container',
+        },
+        backdrop: false,
     });
 
     if (result.isConfirmed) {
@@ -368,8 +377,7 @@ window.handlePhoto = async function(type) {
     };
 
     // Função para deletar a foto
-    // Função para deletar a foto
-const deletePhoto = async () => {
+    const deletePhoto = async () => {
     const result = await Swal.fire({
         title: 'Confirmar exclusão',
         text: `Tem certeza que deseja excluir a foto ${type === 'doc' ? 'do documento' : 'do veículo'}?`,

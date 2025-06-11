@@ -1,0 +1,243 @@
+.profile-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    min-width: 250px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: none;
+    z-index: 1000;
+}
+
+.profile-menu.visible {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+.profile-menu .user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.profile-menu .profile-pic-menu {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.profile-menu .user-name-menu {
+    color: #666666;
+    font-weight: bold;
+}
+
+.profile-menu .menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.profile-menu .menu-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    font-size: 1em;
+    text-decoration: none;
+    border-radius: 8px;
+    background: linear-gradient(145deg, #10B981, #059669);
+    border: none;
+    color: white;
+    transition: all 0.3s ease;
+    width: 100%;
+    cursor: pointer;
+}
+
+.profile-menu .menu-button i {
+    font-size: 1.1em;
+}
+
+.profile-menu .menu-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(145deg, #059669, #047857);
+}
+
+.profile-menu .menu-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Efeito de pulso no hover */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+}
+
+.profile-menu .menu-button:hover {
+    animation: pulse 1.5s infinite;
+}
+
+
+/* Estilos do Modal Cropper */
+.modal {
+    display: flex;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    padding: 20px;
+    border: none;
+    width: 90%;
+    max-width: 600px;
+    border-radius: 10px;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.close-modal {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-modal:hover,
+.close-modal:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.cropper-container {
+    margin: 20px 0;
+    max-height: 400px;
+    overflow: hidden;
+}
+
+.cropper-container img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Cropper.js styles */
+.cropper-view-box,
+.cropper-face {
+    border-radius: 50%;
+}
+
+.cropper-view-box {
+    outline: 0;
+    box-shadow: 0 0 0 1px #39f;
+}
+
+.cropper-face {
+    background-color: inherit !important;
+}
+
+.cropper-dashed,
+.cropper-line {
+    display: none !important;
+}
+
+.cropper-point {
+    background-color: #2E7D32;
+    width: 10px !important;
+    height: 10px !important;
+    opacity: 1;
+}
+
+.cropper-point.point-se {
+    width: 10px !important;
+    height: 10px !important;
+}
+
+.cropper-point.point-n,
+.cropper-point.point-s,
+.cropper-point.point-w,
+.cropper-point.point-e {
+    display: none !important;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal h2 {
+    color: #2E7D32;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-buttons button {
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modal-buttons .btn-primary {
+    background: linear-gradient(145deg, #10B981, #059669);
+    color: white;
+    border: none;
+}
+
+.modal-buttons .btn-secondary {
+    background: #f3f4f6;
+    color: #666;
+    border: 1px solid #ddd;
+}
+
+.modal-buttons button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
