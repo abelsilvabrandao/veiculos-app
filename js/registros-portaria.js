@@ -1,4 +1,4 @@
-import { collection, query, orderBy, onSnapshot, doc, updateDoc, serverTimestamp, getDoc, getFirestore, where } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, serverTimestamp, getDoc, getFirestore, where, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { app } from './main.js';
 import { checkAuth } from './auth.js';
