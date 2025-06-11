@@ -4,30 +4,30 @@ let weatherCache = null;
 
 // Ícones do tempo baseados no código WMO usando SVGs locais
 const weatherIcons = {
-    0: '/img/bx-sun-bright.svg', // Céu limpo
-    1: '/img/bx-cloud-sun.svg', // Parcialmente nublado
-    2: '/img/bx-cloud-sun.svg', // Parcialmente nublado
-    3: '/img/bx-cloud-fog.svg', // Nublado
-    45: '/img/bx-cloud-fog.svg', // Neblina
-    48: '/img/bx-cloud-fog.svg', // Neblina com geada
-    51: '/img/bx-cloud-drizzle.svg', // Chuvisco leve
-    53: '/img/bx-cloud-drizzle.svg', // Chuvisco moderado
-    55: '/img/bx-cloud-rain.svg', // Chuvisco intenso
-    61: '/img/bx-cloud-rain.svg', // Chuva leve
-    63: '/img/bx-cloud-rain-wind.svg', // Chuva moderada
-    65: '/img/bx-cloud-rain-wind.svg', // Chuva forte
-    71: '/img/bx-cloud-snow.svg', // Neve leve
-    73: '/img/bx-cloud-snow.svg', // Neve moderada
-    75: '/img/bx-snowflake.svg', // Neve forte
-    77: '/img/bx-snowflake.svg', // Grãos de neve
-    80: '/img/bx-thunder.svg', // Chuva leve com trovoada
-    81: '/img/bx-thunder.svg', // Chuva moderada com trovoada
-    82: '/img/bx-thunder.svg', // Chuva forte com trovoada
-    85: '/img/bx-sun-snow.svg', // Neve leve com trovoada
-    86: '/img/bx-sun-snow.svg', // Neve forte com trovoada
-    95: '/img/bx-thunder.svg', // Trovoada
-    96: '/img/bx-thunder.svg', // Trovoada com granizo
-    99: '/img/bx-thunder.svg'  // Trovoada forte com granizo
+    0: '/veiculos-app/img/bx-sun-bright.svg', // Céu limpo
+    1: '/veiculos-app/img/bx-cloud-sun.svg', // Parcialmente nublado
+    2: '/veiculos-app/img/bx-cloud-sun.svg', // Parcialmente nublado
+    3: '/veiculos-app/img/bx-cloud-fog.svg', // Nublado
+    45: '/veiculos-app/img/bx-cloud-fog.svg', // Neblina
+    48: '/veiculos-app/img/bx-cloud-fog.svg', // Neblina com geada
+    51: '/veiculos-app/img/bx-cloud-drizzle.svg', // Chuvisco leve
+    53: '/veiculos-app/img/bx-cloud-drizzle.svg', // Chuvisco moderado
+    55: '/veiculos-app/img/bx-cloud-rain.svg', // Chuvisco intenso
+    61: '/veiculos-app/img/bx-cloud-rain.svg', // Chuva leve
+    63: '/veiculos-app/img/bx-cloud-rain-wind.svg', // Chuva moderada
+    65: '/veiculos-app/img/bx-cloud-rain-wind.svg', // Chuva forte
+    71: '/veiculos-app/img/bx-cloud-snow.svg', // Neve leve
+    73: '/veiculos-app/img/bx-cloud-snow.svg', // Neve moderada
+    75: '/veiculos-app/img/bx-snowflake.svg', // Neve forte
+    77: '/veiculos-app/img/bx-snowflake.svg', // Grãos de neve
+    80: '/veiculos-app/img/bx-thunder.svg', // Chuva leve com trovoada
+    81: '/veiculos-app/img/bx-thunder.svg', // Chuva moderada com trovoada
+    82: '/veiculos-app/img/bx-thunder.svg', // Chuva forte com trovoada
+    85: '/veiculos-app/img/bx-sun-snow.svg', // Neve leve com trovoada
+    86: '/veiculos-app/img/bx-sun-snow.svg', // Neve forte com trovoada
+    95: '/veiculos-app/img/bx-thunder.svg', // Trovoada
+    96: '/veiculos-app/img/bx-thunder.svg', // Trovoada com granizo
+    99: '/veiculos-app/img/bx-thunder.svg'  // Trovoada forte com granizo
 };
 
 // Função para formatar a data
@@ -236,7 +236,7 @@ async function updateWeatherUI() {
 
         if (windSpeedElement) {
             // Carregar o SVG do vento
-            fetch('/img/bx-wind.svg')
+            fetch('/veiculos-app/img/bx-wind.svg')
                 .then(response => response.text())
                 .then(svgContent => {
                     const windContainer = document.createElement('div');
