@@ -23,6 +23,7 @@ const STATIC_ASSETS = [
   '/js/components/profile-manager.js',
   '/veiculos-app/img/',
   '/veiculos-app/img/icons/',
+  '/service-worker.js/',
   'https://cdn.jsdelivr.net/npm/@lottiefiles/dotlottie-web/+esm'
 ];
 
